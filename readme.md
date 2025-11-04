@@ -2,8 +2,9 @@
 **About**
 - [Description](#Description)
 - [Installation](<#Installation/Dependencies>)
+
 **Commands**
-- [Command list](<readme#List of Commands>)
+- [Command list](<#List of Commands>)
   - [Interactive Options](<#interactive options>)
   - [Testing Options](<#testing options>)
   - [Configuration Options](<#configuration options>)
@@ -13,6 +14,7 @@
 - [Client Configuration (Servers)](<#server list>)
   - [Server List Formatting](<#Server List Formatting>)
   - [Valid Key Value Pairs](<#Valid Key/Value pairs>)
+
 ## Description
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to

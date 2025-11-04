@@ -1,7 +1,7 @@
 # Westwardfishdme's Server Administration Tool (sat)
 **About**
-- [Description](#Description)
-- [Installation](<#Installation-Dependencies>)
+- [Description](<#Description>)
+- [Installation](<#Installation>)
 
 
 **Configuration**
@@ -23,7 +23,7 @@ open ports, and available system services. Allows a user to
 maintain a list of connected servers (up to a max of 10 per page).
 
 
-# Installation/Dependencies
+# Installation
 
 To install `sat`, use the provided `install.py` with:
 

@@ -7,7 +7,7 @@
 **Configuration**
 - [Client Configuration (Servers)](<#server-list>)
   - [Server List Formatting](<#Server-List-Formatting>)
-  - [Valid Key/Value Pairs](<#Valid-Key-Value-pairs>)
+  - [Valid Key/Value Pairs](<#Valid-Key/Value-pairs>)
 
 **Commands**
 

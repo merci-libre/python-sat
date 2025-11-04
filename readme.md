@@ -1,19 +1,21 @@
 # Westwardfishdme's Server Administration Tool (sat)
 **About**
 - [Description](#Description)
-- [Installation](<#Installation/Dependencies>)
+- [Installation](<#Installation-Dependencies>)
 
-**Commands**
-- [Command list](<#List of Commands>)
-  - [Interactive Options](<#interactive options>)
-  - [Testing Options](<#testing options>)
-  - [Configuration Options](<#configuration options>)
-  - [Informational Options](<#informational options>)
 
 **Configuration**
-- [Client Configuration (Servers)](<#server list>)
-  - [Server List Formatting](<#Server List Formatting>)
-  - [Valid Key Value Pairs](<#Valid Key/Value pairs>)
+- [Client Configuration (Servers)](<#server-list>)
+  - [Server List Formatting](<#Server-List-Formatting>)
+  - [Valid Key/Value Pairs](<#Valid-Key-Value-pairs>)
+
+**Commands**
+
+These are not implemented yet:
+
+- [Command list](<#List-of-Commands>)
+  - [Configuration Options](<#configuration-options>)
+  - [Informational Options](<#informational-options>)
 
 ## Description
 A CLI server administration tool designed to check server uptimes,

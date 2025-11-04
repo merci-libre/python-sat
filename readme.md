@@ -1,18 +1,18 @@
 # Westwardfishdme's Server Administration Tool (sat)
 **About**
-- [Description](readme#Description)
-- [Installation](readme#Installation-Dependencies)
+- [Description](#Description)
+- [Installation](<#Installation/Dependencies>)
 **Commands**
 - [Command list](<readme#List of Commands>)
-  - [Interactive Options](<readme#interactive options>)
-  - [Testing Options](<readme#testing options>)
-  - [Configuration Options](<readme#configuration options>)
-  - [Informational Options](<readme#informational options>)
+  - [Interactive Options](<#interactive options>)
+  - [Testing Options](<#testing options>)
+  - [Configuration Options](<#configuration options>)
+  - [Informational Options](<#informational options>)
 
 **Configuration**
-- [Client Configuration (Servers)](<readme#server list>)
-  - [Server List Formatting](<readme#Server List Formatting>)
-  - [Valid Key Value Pairs](<readme#Valid Key/Value pairs>)
+- [Client Configuration (Servers)](<#server list>)
+  - [Server List Formatting](<#Server List Formatting>)
+  - [Valid Key Value Pairs](<#Valid Key/Value pairs>)
 ## Description
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to

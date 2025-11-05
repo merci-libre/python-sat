@@ -1,11 +1,15 @@
+"""
+This module/library is responsible for keeping a log of
+the program. Also contains the function used for the verbosity
+argument
+"""
+
+import datetime
+# system import
 try:
     from . import ansi
-    import datetime
-    import os
 except ImportError:
     import ansi
-    import datetime
-    import os
 log_wrapped = {}
 log_no_color = {}
 log_errors = {}
@@ -81,7 +85,7 @@ class __formatted:
         self.log_id_format = f"[ message id: {id} ]:"
 
 
-def read_log():
+def print_log():
     for id, message in log_wrapped.items():
         print(f"{ansi.PURPLE}{__formatted(id).log_id_format}  {message}")
     print(f"{ansi.BLUE}== [ END OF MAIN THREAD ] ==\n")
@@ -101,8 +105,6 @@ def write_log():
     # format the unix_timestamp to fit naming convention.
 
     # set the userid so that root does not own the file.
-    os.setgid(1001)
-    os.setuid(1000)
     with open(f"/tmp/sat_log{unix_timestamp}.log", "w") as logfile:
         # write out the main log.
         for id, message in log_no_color.items():

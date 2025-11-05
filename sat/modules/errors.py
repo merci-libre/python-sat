@@ -204,6 +204,21 @@ class TomlFiles(Exception):
             self.code = code
             super().__init__(message)
 
+    class DeserializationFailure(Exception):
+        """
+        Raised when the file parsed is either not a toml file,
+        or it is incorrectly structured.
+        """
+
+        def __str__(self):
+            return f"{self.file}: {self.message}"
+
+        def __init__(self, file: str, message="is not a toml file", code=2003):
+            self.file = file
+            self.message = message
+            self.code = code
+            super().__init__(message)
+
 
 class ConnectivityDefinitions(Exception):
 

@@ -3,27 +3,32 @@
 - [Description](<#Description>)
 - [Installation](<#Installation>)
 
+**Commands**
+- [Command list](<#list-of-commands>)
+  - [Configuration Options](<#configuration-options>)
+  - [Informational Options](<#informational-options>)
 
 **Configuration**
 - [Client Configuration (Servers)](<#server-list>)
   - [Server List Formatting](<#Server-List-Formatting>)
   - [Valid Key/Value Pairs](<#Valid-KeyValue-pairs>)
 
-**Commands**
-
-These are not implemented yet:
-
-- [Command list](<#List-of-Commands>)
-  - [Configuration Options](<#configuration-options>)
-  - [Informational Options](<#informational-options>)
-
-## Description
+# Description
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to
-maintain a list of connected servers (up to a max of 10 per page).
+maintain a list of connected servers.
 
 
 # Installation
+First, clone the repository:
+```sh
+git clone https://github.com/merci-libre/python-sat
+```
+Go to the directory.
+
+```sh
+cd python-sat
+```
 
 To install `sat`, use the provided `install.py` with:
 
@@ -42,41 +47,39 @@ the system Package Manager, please install the following
 python libraries:
 
 ```
-icmplib
-requests
+python-icmplib 
+python-requests
 ```
 
 On Arch Linux:
 ```
 # pacman -S python-icmplib python-requests
 ```
+# Usage
+
+After installing `sat` you can just invoke the command with
+`python sat`
+
+It will then read the `servers.toml` file 
 
 # List of Commands
 
-`sat` allows you to do numerous amounts of tests, benchmarking (not yet implemented), 
-and 
-
 Here is a list of arguments you can use to run `sat`:
-- (NOT FUNCTIONAL AS OF CURRENT COMMIT)
 
-### Interactive options
-- `--interactive-mode (-I)`: Launches an interactive mode shell-like environment.
-- `--sort (-S)` : Sort tables by CIDR block format /24 (e.g. any ip address with 127.0.0.* will list out a specific table for the ip range 127.0.0.0/24)
-
+example:
+```sh
+python sat -v -t my_servers.toml
+```
 ### Testing options
-- `--connect (-c) <SERVICE_PORT>`: Attempt to connect to a specific port on the machine
-- `--test-mode (-T)`: Automatically test services on ALL listed ports in `check_ports` 
-value inside of the `server_list.toml` file (currently only tests HTTP(S), SSH, and ICMP protocol)
-
-### Configuration options
-
-- `--new (-n)`: start an interactive prompt to create a new server to append to the `server_list.toml` file.
-- `--delete (-X)`: remove 
+- `--toml-file | -t {path/to/file.toml}`: use a non-default toml file (that is not servers.toml)
+- `--timeout | -T {int} (DEFAULT: 4)`: Default timeout for connections, default value is 4
 
 ### Informational options
 
-- `--verbose (-v)`: be verbose.
-- `--version (-V)`: Print Version information.
+- `--print-table | -v`: prints a log to standard out
+- `--output-log | -o {file}`: outputs a log to /tmp/ directory, (will change to current directory in v1.01)
+- `--version | -V`: Print software and version information.
+- `--help | -h`
 
 If no arguments are passed, `sat` will print out a table containing diagnostic information on each server found
 inside of `{CONFIG_DIRECTORY}/`
@@ -92,12 +95,12 @@ this tool on.
 ### On Windows:
 For Windows users, it will create a file within the directory:
 
-`C:\Documents\server_admin_tool\server_list.toml`
+`C:\Documents\server_admin_tool\servers.toml`
 
 ### On OSX/Linux:
 For MacOS, and Linux users:
 
-`$HOME/.config/server_admin_tool/server_list.toml`
+`$HOME/.config/server_admin_tool/servers.toml`
 
 On startup, `sat` will search for these files within those directories. 
 If the process cannot find the file, the program will generate an error, 
@@ -113,7 +116,7 @@ also to describe how you should add servers in to this file.
 [Server]
   [server.localhost]
   ip_address= "127.0.0.1" # server ip address
-  check_ports=[443, 8080, 22] # checks if the TCP ports in this list are open
+  check_ports=[443, 8080, 22] # checks if the TCP ports in this list are open,
 
   [server.google_dns]
   ip_address= "8.8.8.8" # server ip address
@@ -126,7 +129,7 @@ a new entry.
 ### Valid Key/Value pairs
 As of of this current release version, the table below lists
 accepted keys and types for value pairs, and a description of
-what `sat` interprets the information within `server_list.toml`.
+what `sat` interprets the information within `servers.toml`.
 
 | Key             | Value Types     | Description         | Example         |
 | --------------- | --------------- | ------------------- | --------------- |

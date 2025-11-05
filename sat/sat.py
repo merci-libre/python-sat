@@ -25,14 +25,12 @@ def start():
         from modules import main
         from modules import arguments as args
 
-    args.parse(name)
-
     try:
         # main.check_priv()  # the error is handled within the file already...
         main.run(name, __version__)
     except Exception as e:
-        print(f"[ ERROR ] {name} {__version__} ran into a fatal error!:\n{
-              e}", file=sys.stderr)
+        print(f"[ ERROR ] {name} {__version__} ran into a fatal error!:\n"
+              f"{type(e).__name__}{e.__traceback__}{e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

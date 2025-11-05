@@ -51,13 +51,13 @@ On Arch Linux:
 # pacman -S python-icmplib python-requests
 ```
 
-
 # List of Commands
 
 `sat` allows you to do numerous amounts of tests, benchmarking (not yet implemented), 
 and 
 
 Here is a list of arguments you can use to run `sat`:
+- (NOT FUNCTIONAL AS OF CURRENT COMMIT)
 
 ### Interactive options
 - `--interactive-mode (-I)`: Launches an interactive mode shell-like environment.
@@ -92,12 +92,12 @@ this tool on.
 ### On Windows:
 For Windows users, it will create a file within the directory:
 
-`C:\Documents\ServerAdminTool\serverlists\server_list.toml`
+`C:\Documents\server_admin_tool\server_list.toml`
 
 ### On OSX/Linux:
 For MacOS, and Linux users:
 
-`$HOME/.config/ServerAdminTool/serverlists/server_list.toml`
+`$HOME/.config/server_admin_tool/server_list.toml`
 
 On startup, `sat` will search for these files within those directories. 
 If the process cannot find the file, the program will generate an error, 
@@ -137,4 +137,6 @@ what `sat` interprets the information within `server_list.toml`.
 **EXAMPLES**
 - `ip_address`: "192.168.0.1" or "https://google.com", or (hostname) in `/etc/hosts`.
 - `hostname`  : "foobar"
-- `check_ports`: `[443, 22, 21]` or `[None]` or `None`
+- `ports`: `[443, 22, 21]`
+- `scan`: True
+

@@ -1,6 +1,7 @@
 # Westwardfishdme's Server Administration Tool (sat)
 **About**
 - [Description](<#Description>)
+- [Requirements](<#Requirements>)
 - [Installation](<#Installation>)
 
 **Commands**
@@ -9,15 +10,27 @@
   - [Informational Options](<#informational-options>)
 
 **Configuration**
-- [Client Configuration (Servers)](<#server-list>)
-  - [Server List Formatting](<#Server-List-Formatting>)
-  - [Valid Key/Value Pairs](<#Valid-KeyValue-pairs>)
+- [toml file configuration](<#server-list>)
+- [Server List Formatting](<#Server-List-Formatting>)
+- [Valid Key/Value Pairs](<#Valid-KeyValue-pairs>)
 
 # Description
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to
 maintain a list of connected servers.
 
+## Requirements
+`python-sat` was developed and tested on python **version 3.13.7**
+however, version >3.11  should be sufficient enough.
+
+## Dependencies
+`python-sat` requires 2 external libraries:
+1. icmplib
+2. requests
+
+These can be downloaded through pip or installed via the `requirements.txt`
+
+If your python version requires an external python-venv, see [this section](<#external-python-venv-or-using-system-packages>)
 
 # Installation
 First, clone the repository:
@@ -51,6 +64,10 @@ python-icmplib
 python-requests
 ```
 
+On Debian/Ubuntu:
+```
+# apt-get install python-icmplib python-requests
+```
 On Arch Linux:
 ```
 # pacman -S python-icmplib python-requests
@@ -70,6 +87,7 @@ example:
 ```sh
 python sat -v -t my_servers.toml
 ```
+
 ### Testing options
 - `--toml-file | -t {path/to/file.toml}`: use a non-default toml file (that is not servers.toml)
 - `--timeout | -T {int} (DEFAULT: 4)`: Default timeout for connections, default value is 4
@@ -79,10 +97,10 @@ python sat -v -t my_servers.toml
 - `--print-table | -v`: prints a log to standard out
 - `--output-log | -o {file}`: outputs a log to /tmp/ directory, (will change to current directory in v1.01)
 - `--version | -V`: Print software and version information.
-- `--help | -h`
+- `--help | -h`: print help
 
-If no arguments are passed, `sat` will print out a table containing diagnostic information on each server found
-inside of `{CONFIG_DIRECTORY}/`
+If no arguments are passed, `sat` will print out a table containing diagnostic information for each server found
+inside of the default `servers.toml` directory.
 
 # Configuration
 
@@ -120,7 +138,7 @@ also to describe how you should add servers in to this file.
 
   [server.google_dns]
   ip_address= "8.8.8.8" # server ip address
-  scan= False
+  scan= false
 
 ```
 You can either append to this list manually, or use the command line to create

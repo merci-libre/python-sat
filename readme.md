@@ -51,9 +51,6 @@ On Arch Linux:
 # pacman -S python-icmplib python-requests
 ```
 
-The program requires an SUID bit signature for the `connectivity` module, which
-uses raw sockets to 
-
 # List of Commands
 
 `sat` allows you to do numerous amounts of tests, benchmarking (not yet implemented), 

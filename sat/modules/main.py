@@ -6,7 +6,9 @@ any missing library modules, fatal errors, and mismatched python versions.
 
 # python venv + standard modules
 import time
+import signal
 import threading
+import sys
 
 # try importing a major depend
 # my modules
@@ -36,11 +38,11 @@ def __check_values(server, ip, ports, scan) -> int:
     SIGNAL = 0
 
     try:
-        check.ip(ip, server)
+        ip = check.ip(ip, server)
         log.write(f"[Main]: IP address for {server} is valid.")
-        check.ports(ports, server)
+        ports = check.ports(ports, server)
         log.write(f"[Main]: port(s) for {server} is valid")
-        check.scan(scan, server)
+        scan = check.scan(scan, server)
         log.write(f"[Main]: scan value for {server} is valid")
         SIGNAL = 0
     except errors.ConnectivityDefinitions.IPAddressErrors.IncorrectType:
@@ -61,7 +63,7 @@ def __check_values(server, ip, ports, scan) -> int:
         SIGNAL = 2
     except errors.ConnectivityDefinitions.Scan.IncorrectType:
         SIGNAL = 2
-    return SIGNAL
+    return (SIGNAL, ip, ports, scan)
 
 
 def __create_threads(servers: list, timeout: int) -> list:
@@ -79,14 +81,14 @@ def __create_threads(servers: list, timeout: int) -> list:
     for (server, data) in server_information:
         # Gets the deserialized data from the parsed toml file
         ip = data.get("ip")
+
         # tad bit auto correct, port or ports will work
         ports = data.get("ports")
 
-        if data.keys().__contains__("port"):
-            ports = data.get("port")
         scan = data.get("scan")
+        (signal, ip, ports, scan) = __check_values(server, ip, ports, scan)
 
-        match __check_values(server, ip, ports, scan):
+        match signal:
             # check the return signals from __check_values()
             case 0:
                 pass
@@ -95,10 +97,6 @@ def __create_threads(servers: list, timeout: int) -> list:
             case 2:
                 ports = None
                 scan = False
-
-        if type(ports) is list:
-            ports = list(dict.fromkeys(ports))
-            ports.sort()
 
         # we actually can just check this one in line
         # load the threads
@@ -109,7 +107,6 @@ def __create_threads(servers: list, timeout: int) -> list:
             log.notify(f"[Main Thread]: Loading thread {
                 t} with values:{ansi.END}\n\tip={ip}\n\tPorts={ports}, scan={scan},timeout={timeout}")
             threads.append(t)
-        # this is a rather vague exception, but it catches the issue as a catch all.
         except Exception:
             raise errors.Threads.FailedToCreate
     return threads
@@ -118,37 +115,47 @@ def __create_threads(servers: list, timeout: int) -> list:
 def __join_threads(threads: list, timeout: int):
     """
     connects the threads, with a timeout.
-    Default timeout is 10 seconds, however, can be changed with the -T
+    Default timeout is 18 seconds, however, can be changed with the -T
     argument. e.g:
 
-    (python sat -T 6 == timeout=13)
+    (python sat -T 6 == timeout=22)
     ```
-    timeout = (timeout*2)+1
+    timeout = (timeout*2)+10
     ```
 
     6 for ping, 6 for http, 12s total testing.
-    Before killing, 1 second to join.
+    Before killing, 10 seconds to join.
     """
 
-    timeout = (timeout*2)+1
+    timeout = (timeout*2)+10
+
     for thread in threads:
         log.notify(f"[Values]:\n{connectivity.connections}")
-        thread.join(timeout)
         log.write(f"[Main Thread]: {thread} joined!")
-        tables.UpdateMaps(connectivity.open_ports, connectivity.closed_ports)
         # draw table
+        thread.join(timeout)
+        tables.UpdateMaps(connectivity.open_ports, connectivity.closed_ports)
         tables.draw_table(connectivity.connections)
 
 
 def run(name: str, version: str):
+    # signal.signal(signal.SIGINT)
     """
     This is our main function, it handles the entire program.
     If an error occurs within here, it returns with a fatal error
     to the program invocation.
     """
-    # get the tomlfile path
+    # initialize our arguments, check for bad values
     args = arguments.parse(name)
     servers_tomlfile = args.toml_file
+    timeout = args.timeout
+
+    if args.timeout < 2 and not args.timeout == 0:
+        eprint("Timeout cannot be shorter than 2 seconds!")
+        exit(1)
+
+    if args.timeout == 0:
+        timeout = 999
 
     # get the time and initiate the log.
     date = time.asctime()
@@ -161,16 +168,19 @@ def run(name: str, version: str):
     log.write(f"TOML {servers_tomlfile} loaded!")
 
     # create threads and draw our initial table after threads.
-    threads: list = __create_threads(servers, args.timeout)
+    threads: list = __create_threads(servers, timeout)
     tables.draw_table(connectivity.connections, True)
 
     # start the threads
-    for thread in threads:
-        log.notify(f"[ Main Thread ]: {thread}")
-        thread.start()
+    try:
+        for thread in threads:
+            log.notify(f"[ Main Thread ]: {thread}")
+            thread.start()
 
-    # handle joining threads
-    __join_threads(threads, timeout=args.timeout)
+        # handle joining threads
+        __join_threads(threads, timeout=timeout)
+    except KeyboardInterrupt:
+        pass
 
     # redraw the table one last time:
     tables.draw_table(connectivity.connections)

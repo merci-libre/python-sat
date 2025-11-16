@@ -1,3 +1,8 @@
+"""
+Although all colors are not used, in future implementations--
+we may use these variables to customize output prompts within
+a configuration file.
+"""
 # Ansi colors
 
 BLACK = "\033[0;30m"

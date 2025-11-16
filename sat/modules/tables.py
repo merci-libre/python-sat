@@ -6,7 +6,7 @@ from .errors import eprint
 
 class UpdateMaps():
     """
-    This updates the maps for the table.
+    This updates the port maps for the table.
     """
     open_ports = {}
     closed_ports = {}
@@ -52,7 +52,10 @@ class __globals:
     bottom = f"{table_color}┗{ip_bar}┻{connected_bar}┛{ansi.END}"
 
 
-def __draw_ip_table_format(connections: dict, ip_address: str, count: int, table_start: bool):
+def __draw_ip_table_format(connections: dict,
+                           ip_address: str,
+                           count: int,
+                           table_start: bool):
     """
     Draws out the table. Only available within this specific module.
     """

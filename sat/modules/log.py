@@ -101,7 +101,8 @@ def write_log():
     `sat-{CURRENT_UNIX_TIME_STAMP}.log`
     will create in /tmp/directory.
     """
-    unix_timestamp = str(datetime.datetime.utcnow()).replace(" ", "_")
+    unix_timestamp = str(datetime.datetime.utcnow()).replace(" ", "_").replace(
+        ":", "-")
     # format the unix_timestamp to fit naming convention.
 
     # set the userid so that root does not own the file.

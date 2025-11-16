@@ -63,11 +63,36 @@ def get_toml_path() -> str:
     return path_to_config
 
 
-def write_toml(filename: str, out_data: dict):
+# not implemented yet
+def write_toml(filename: str, server_count=5):
     """
-    Writes our tomlfile
+    Used to create a custom list that the user can
+    edit and define.
     """
-    pass
+    # argument parsing
+    if filename.__contains__(".toml"):
+        filename.replace(".toml", "")
+
+    # actual writing
+    with open(f"{filename}.toml", 'w') as toml:
+        try:
+            # top header
+            toml.write("[servers]\n")
+            for i in range():
+                toml.write("\n[servers.{server_name}]")
+                toml.write(
+                    '\n\tip = # enter an IP address here, type="string"')
+                toml.write(
+                    '\n\tports = # enter a list i.e: [22, 1337, 65535]'
+                )
+                toml.write('\n\tscan= # enter a boolean value here')
+                toml.write('\n')
+        except FileExistsError:
+            errors.eprint(f"{filename} already exists!")
+            exit(1)
+        except PermissionError:
+            raise errors.TomlFiles.Permissions.WritePermissions(
+                f"{filename}")
 
 
 def parse_toml(tomlfile: str) -> dict:

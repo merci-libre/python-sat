@@ -54,6 +54,11 @@ python install.py
 ```
 
 ## External Python VENV or using system packages.
+
+To install this package within the python VENV, you can use the VENV tools within
+your specific python venv directory.
+
+# System Packages
 If you are on Arch Linux, or another distribution which
 requires external python libraries to be installed with
 the system Package Manager, please install the following 
@@ -75,18 +80,19 @@ On Arch Linux:
 # Usage
 
 After installing `sat` you can just invoke the command with
-`python sat`
+`python sat` within the project/repositories root directory.
 
-It will then read the `servers.toml` file 
+A system wide implentation has not been added yet.
+
+example:
+```sh
+# in the root repo directory...
+python sat -v -t my_servers.toml
+```
 
 # List of Commands
 
 Here is a list of arguments you can use to run `sat`:
-
-example:
-```sh
-python sat -v -t my_servers.toml
-```
 
 ### Testing options
 - `--toml-file | -t {path/to/file.toml}`: use a non-default toml file (that is not servers.toml)

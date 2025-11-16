@@ -40,8 +40,7 @@ def parse(prog_name: str):
     parser.add_argument("--version", "-V", default=False,
                         action="store_true",
                         help="print the version")
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

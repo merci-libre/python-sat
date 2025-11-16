@@ -120,12 +120,14 @@ def ping(ip_address: str, main_timeout: int) -> bool:
         privileged=False).packets_received
 
     if packets_received > 0:
+        log.write(f"{ip_address} responded with {packets_received} packets")
         return True
     else:
+        log.error(f"{ip_address} responded with {packets_received} packets")
         return False
 
 
-def test(ip_address: str, ports: list, scan: bool, timeout=4) -> None:
+def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
     """
     This is our "main" testing function, we load this function
     with data from the parsed toml file. T
@@ -150,4 +152,6 @@ def test(ip_address: str, ports: list, scan: bool, timeout=4) -> None:
         connections[ip_address] = [False, None]
         return False
     if ports is not None and scan:
+        log.notify(f"checking {ip_address} for open ports with values: {
+            ports}\nscan={scan}")
         test_ports(ip_address, timeout)

@@ -17,7 +17,7 @@ class Check():
         scan_error = ConnectivityDefinitions.Scan
         match scan:
             case bool():
-                return
+                return scan
             case _:
                 raise scan_error.IncorrectType(server_id)
 
@@ -44,7 +44,6 @@ class Check():
                 # the list into a dictionary and back into a list.
 
                 ports = list(dict.fromkeys(ports))
-
                 ports.sort()
 
                 # check the values to ensure all are within valid ports
@@ -52,12 +51,15 @@ class Check():
 
                 if not all_valid:
                     raise port_errors.PortOutOfRange(server_id)
-
                 return ports
 
             case int():
+                # since we are iterating over this reduces overhead
+                port_to_list = []
                 if ports <= 0 or MAX_PORT < ports:
                     raise port_errors.PortOutOfRange(server_id)
+                port_to_list.append(ports)
+                return port_to_list
             # if neither matches...
             case None:
                 pass
@@ -75,9 +77,23 @@ class Check():
                     raise ip_errors.BadIPAddressValue(server_id)
             case _:
                 raise ip_errors.IncorrectType(server_id)
+        return ip
 
 
-# Errors and error codes.
+class ParseValues():
+    """
+    Checks arguments to see if they are of a
+    specific data type
+
+    """
+
+    def __init__(self, *args, comparison_to: type):
+        for arg in args:
+            match arg:
+                case str():
+                    pass
+
+
 class Main(Exception):
     """
     All of these errors deal with the main thread.
@@ -174,31 +190,51 @@ class TomlFiles(Exception):
     These errors are all related to TOML file parsing.
     Including but not limited to:
 
-    Read permissions, Missing Files, etc.
+    Read/Write permissions, Missing Files, etc.
     Codes 2000's are ALL related to toml files
     """
 
-    class TomlReadPermissions(Exception):
-        """
-        Raised when the user lacks read/write permissions to the file.
-        """
+    class Permissions:
+        # These handle r/w permissions.
+        class ReadPermissions(Exception):
+            """
+            Raised when the user lacks read permissions to the file.
+            """
 
-        def __str__(self):
-            return f"{self.file}: {self.message}"
+            def __str__(self):
+                return f"{self.path}: {self.message}"
 
-        def __init__(self,
-                     file: str,
-                     message="lacking read permissions", code=2001):
-            self.file = file
-            self.message = message
-            self.code = code
-            super().__init__(message)
+            def __init__(self,
+                         path: str,
+                         message="lacking write or read permissions to path.",
+                         code=2001):
+                self.path = path
+                self.message = message
+                self.code = code
+                super().__init__(message)
+
+        class WritePermissions(Exception):
+            """
+            Raised when the user lacks write permissions to the file.
+            """
+
+            def __str__(self):
+                return f"{self.path}: {self.message}"
+
+            def __init__(self,
+                         path: str,
+                         message="lacking write permissions to file path.",
+                         code=2002):
+                self.path = path
+                self.message = message
+                self.code = code
+                super().__init__(message)
 
     class TomlFileMissing(Exception):
         def __str__(self):
             return f"{self.file}: {self.message}"
 
-        def __init__(self, file: str, message="file is missing", code=2002):
+        def __init__(self, file: str, message="file is missing", code=2003):
             self.file = file
             self.message = message
             self.code = code
@@ -213,7 +249,7 @@ class TomlFiles(Exception):
         def __str__(self):
             return f"{self.file}: {self.message}"
 
-        def __init__(self, file: str, message="is not a toml file", code=2003):
+        def __init__(self, file: str, message="is not a toml file", code=2004):
             self.file = file
             self.message = message
             self.code = code

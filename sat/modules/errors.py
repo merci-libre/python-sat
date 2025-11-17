@@ -1,5 +1,10 @@
 import sys
 from threading import Thread
+import traceback
+try:
+    from . import ansi
+except ImportError:
+    import ansi
 
 
 def eprint(*args, **kwargs):
@@ -100,12 +105,12 @@ class Main(Exception):
     This can return anything from a panic, to an import error.
     All errors in this class are fatal.
 
-    Code 1-999 are all related to main.
+    Code 1-50 are all related to main.
     """
     class ImportError(Exception):
 
         def __str__(self):
-            return f"{self.thread}: {self.message}"
+            return f"{self.thread}: {self.message}\n{ansi.RED}{self.traceback}{ansi.END}\n{traceback}"
 
         def __init__(self, thread: Thread,
                      message="Failed to import the libraries within main...",
@@ -113,6 +118,36 @@ class Main(Exception):
             self.thread = thread
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
+            super().__init__(message)
+
+
+class Connection(Exception):
+    """
+    These errors are raised when a user a connection inside of
+    the connectivity module are raised, we raise these when connectivity
+    fails to either run properly, or when there is an issue with ICMPlib
+    in particular.
+
+    Codes 50-100 relate to this class.
+    """
+    class Privileges(Exception):
+        """
+        This is the same as icmplib.exceptions.SocketpermissionError
+        (see:)
+        (https://github.com/ValentinBELYN/icmplib/blob/main/icmplib/exceptions.py)
+        However, we implement a custom message rather than just the original.
+        """
+
+        def __str__(self):
+            return f"{ansi.RED}{self.message}:{ansi.END}\n{self.traceback}"
+
+        def __init__(self,
+                     message="You need to run this command as root!",
+                     code=1001):
+            self.message = message
+            self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
 
@@ -135,7 +170,8 @@ class Threads(Exception):
         """
 
         def __str__(self):
-            return f"{self.thread}: {self.message}"
+            return f"{self.thread}: {self.message}\n{ansi.RED}{
+                self.traceback}{ansi.END}"
 
         def __init__(self, thread: Thread,
                      message="Thread failed to create.",
@@ -143,6 +179,7 @@ class Threads(Exception):
             self.thread = thread
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
     class FailedToJoin(Exception):
@@ -154,7 +191,8 @@ class Threads(Exception):
         """
 
         def __str__(self):
-            return f"{self.thread}: {self.message}"
+            return f"{self.thread}: {self.message}\n{ansi.RED}{
+                self.traceback}{ansi.END}"
 
         def __init__(self, thread: Thread,
                      message="Thread failed to join to MainThread!",
@@ -162,6 +200,7 @@ class Threads(Exception):
             self.thread = thread
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
     class FailedToRun(Exception):
@@ -174,7 +213,8 @@ class Threads(Exception):
         """
 
         def __str__(self):
-            return f"{self.thread}: {self.message}"
+            return f"{self.thread}: {self.message}\n{ansi.RED}{
+                self.traceback}{ansi.END}"
 
         def __init__(self, thread,
                      message="Thread failed to run.",
@@ -182,6 +222,7 @@ class Threads(Exception):
             self.thread = thread
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
 
@@ -202,7 +243,8 @@ class TomlFiles(Exception):
             """
 
             def __str__(self):
-                return f"{self.path}: {self.message}"
+                return f"{self.path}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self,
                          path: str,
@@ -211,6 +253,7 @@ class TomlFiles(Exception):
                 self.path = path
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)
 
         class WritePermissions(Exception):
@@ -219,7 +262,8 @@ class TomlFiles(Exception):
             """
 
             def __str__(self):
-                return f"{self.path}: {self.message}"
+                return f"{self.path}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self,
                          path: str,
@@ -228,16 +272,19 @@ class TomlFiles(Exception):
                 self.path = path
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)
 
     class TomlFileMissing(Exception):
         def __str__(self):
-            return f"{self.file}: {self.message}"
+            return f"{self.file}: {self.message}\n{ansi.RED}{
+                self.traceback}{ansi.END}"
 
         def __init__(self, file: str, message="file is missing", code=2003):
             self.file = file
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
     class DeserializationFailure(Exception):
@@ -247,12 +294,14 @@ class TomlFiles(Exception):
         """
 
         def __str__(self):
-            return f"{self.file}: {self.message}"
+            return f"{self.file}: {self.message}\n{ansi.RED}{
+                self.traceback}{ansi.END}"
 
         def __init__(self, file: str, message="is not a toml file", code=2004):
             self.file = file
             self.message = message
             self.code = code
+            self.traceback = traceback.format_exc()
             super().__init__(message)
 
 
@@ -262,7 +311,8 @@ class ConnectivityDefinitions(Exception):
 
         class BadIPAddressValue(Exception):
             def __str__(self):
-                return f"{self.server_name}: {self.message}"
+                return f"{self.server_name}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self,
                          server_name,
@@ -272,11 +322,13 @@ class ConnectivityDefinitions(Exception):
                 self.server_name = server_name
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)
 
         class IncorrectType(Exception):
             def __str__(self):
-                return f"{self.server_name}: {self.message}"
+                return f"{self.server_name}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self,
                          server_name,
@@ -291,7 +343,8 @@ class ConnectivityDefinitions(Exception):
     class Ports(Exception):
         class PortOutOfRange(Exception):
             def __str__(self):
-                return f"{self.server_name}: {self.message}"
+                return f"{self.server_name}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self, server_name,
                          message="port(s) must be in the range(1, 65535)",
@@ -299,12 +352,14 @@ class ConnectivityDefinitions(Exception):
                 self.server_name = server_name
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)
 
         class IncorrectType(Exception):
 
             def __str__(self):
-                return f"{self.server_name}: {self.message}"
+                return f"{self.server_name}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self, server_name,
                          message="port(s) must be type 'int' or list[int]",
@@ -312,12 +367,14 @@ class ConnectivityDefinitions(Exception):
                 self.server_name = server_name
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)
 
     class Scan(Exception):
         class IncorrectType(Exception):
             def __str__(self):
-                return f"{self.server_name}: {self.message}"
+                return f"{self.server_name}: {self.message}\n{ansi.RED}{
+                    self.traceback}{ansi.END}"
 
             def __init__(self, server_name,
                          message="Scan value must be a boolean",
@@ -325,4 +382,5 @@ class ConnectivityDefinitions(Exception):
                 self.server_name = server_name
                 self.message = message
                 self.code = code
+                self.traceback = traceback.format_exc()
                 super().__init__(message)

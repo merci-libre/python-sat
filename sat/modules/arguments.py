@@ -19,7 +19,7 @@ def parse(prog_name: str):
                         help='''
                         output the final table connection to stdout.
                         ''')
-    parser.add_argument("--print-log", "-v",
+    parser.add_argument("--verbose", "-v",
                         default=False,
                         action="store_true",
                         help="print a log to STDOUT")

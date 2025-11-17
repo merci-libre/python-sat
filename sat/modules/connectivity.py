@@ -12,18 +12,21 @@ For example, a list with connections will generate the following values:
         [True, [443,22]]
 also creates and stores the hashmap dictionaries for the program:
 ```py
-    # all tables stored within connectivity.py
+    # all hashmaps stored within connectivity.py
     connectivity.connections={}
-    connectivity.open_ports = {}
-    connectivity.closed_ports = {}
+    connectivity.open_ports ={}
+    connectivity.closed_ports ={}
 ```
 """
 import socket
+import time
 try:
     from . import log
     from .errors import eprint
+    from . import errors
 except ImportError:
     import log
+    import errors
     from errors import eprint
 # try importing our external dependencies
 try:
@@ -37,6 +40,7 @@ try:
     has_dep1 = True
     import requests
     has_dep2 = True
+
 except ModuleNotFoundError:
     eprint("\033[0;31m[ERROR]\033[0m: You are missing essential external"
            "libraries required to run this project.")
@@ -44,8 +48,8 @@ except ModuleNotFoundError:
         eprint(f"Missing-> {dep1}")
     if not has_dep2:
         eprint(f"Missing-> {dep2}")
-
     exit(1)
+
 except ImportError:
     eprint("\033[0;31m[ERROR]\033[0m: You are missing essential external"
            "libraries required to run this project.")
@@ -66,23 +70,23 @@ def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
     try:
         response = requests.get(
             f"http://{ip_address}:{port}", timeout=main_timeout)
-        log.write(f"ABLE TO CONNECT VIA HTTP to {ip_address}:{port}!")
-        log.write(f"Connected to {port} via HTTP on {
-                  ip_address}, response={response}")
+        log.write(f"[http]: ABLE TO CONNECT VIA HTTP to {ip_address}:{port}!")
+        log.info(f"Connected to {port} via HTTP on {
+                 ip_address}, response={response}")
 
         return True
     except requests.exceptions.Timeout:
         log.error(
-            f"HTTP connection timed out for {ip_address} on port {port}")
+            f"[http]: HTTP connection timed out for {ip_address} on port {port}")
         return False
     except requests.exceptions.ConnectionError:
         log.error(
-            f"HTTP reached max retries for {ip_address} on port {port}")
+            f"[http]: HTTP reached max retries for {ip_address} on port {port}")
         return False
     except Exception as e:
         log.error(
             f"HTTP connection to {port} for {ip_address} failed with the",
-            f"following error message: {type(e).__name__}: {e}")
+            f"following error message: {type(e).__name__}")
         return False
 
 
@@ -98,33 +102,49 @@ def test_ports(ip_address: str, timeout: int) -> None:
         result = sock.connect_ex((ip_address, port))
         if result == 0 or test_http(ip_address, port, timeout):
             list_open.append(port)
-            log.write(f"FROM TEST_PORTS: connected to {
-                port} on {ip_address}!")
+            log.notify(f"[ports]: connected to {port} on {ip_address}!")
             open_ports[ip_address] = list_open
         else:
-            log.error(f"[Port Testing]: unable to connect to {
+            log.error(f"[ports]: unable to connect to {
                 port} on {ip_address}...")
             list_closed.append(port)
             closed_ports[ip_address] = list_closed
         sock.close()
 
 
-def ping(ip_address: str, main_timeout: int) -> bool:
+def ping(ip_address: str, main_timeout: int, count=4) -> bool:
     """
     Ping the given address with ICMP requests.
     """
+    response = False
     # pings the server, on ICMP echo reply +=1
-    packets_received = icmplib.ping(
-        ip_address, 2, 1,
-        timeout=main_timeout,
-        privileged=False).packets_received
+    try:
+        packets_received = icmplib.ping(
+            ip_address, count, 0.8,
+            timeout=main_timeout,
+            privileged=True).packets_received
+    except icmplib.exceptions.SocketPermissionError:
+        packets_received = icmplib.ping(
+            ip_address, count, 0.8,
+            timeout=main_timeout,
+            privileged=False).packets_received
+    else:
+        raise errors.Connection.Privileges
+
+    dropped = f"{(1.0-packets_received/count)*100:.2f}%"
+    log.notify(f"Pinged {ip_address} with {count}...")
 
     if packets_received > 0:
-        log.write(f"{ip_address} responded with {packets_received} packets")
-        return True
+        log.write(f"[ping]: {ip_address} is up!")
+        log.info(f"ip: {ip_address}, packet_loss:{
+                 dropped}, timeout:{main_timeout}")
+        response = True
     else:
         log.error(f"{ip_address} responded with {packets_received} packets")
-        return False
+        log.info(f"ip: {ip_address}, packet_loss:{
+                 dropped}, timeout:{main_timeout}")
+
+    return response
 
 
 def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
@@ -136,22 +156,19 @@ def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
         # ping the address:
         ping_ok = ping(ip_address, timeout)
 
-        # update our map
         if ping_ok:
-            log.write(f"[ICMP Ping]: {ip_address} connected!")
             connections[ip_address] = [True, ports]
         else:
-            log.error(f"[ICMP Ping]: {ip_address} did not connect...")
             connections[ip_address] = [False, None]
+            return  # stop the thread
     except Exception as e:
-
         # any errors in ping will just update the values
         # as if it never connected.
-        log.error(f"[ICMP Ping]: \n\tip_address= {
-                  ip_address}\n\tports= {ports} \n{e}")
+        log.error(f"[Test][Ping]: {e}")
         connections[ip_address] = [False, None]
         return False
     if ports is not None and scan:
-        log.notify(f"checking {ip_address} for open ports with values: {
-            ports}\nscan={scan}")
+        log.notify(f"checking port status on {ip_address} on ports: {ports}")
         test_ports(ip_address, timeout)
+    else:
+        return  # stop the thread

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-import os
+import traceback
 """
 This file is our initialization file for the entire project.
 """
@@ -21,19 +21,25 @@ def start():
     # try to import these libraries
     try:
         from .modules import main
+        from .modules import ansi
     except ImportError:
         from modules import main
+        from modules import ansi
 
     try:
         # main.check_priv()  # the error is handled within the file already...
         main.run(name, __version__)
     except KeyboardInterrupt:
+        print("\n\nExiting the script...", file=sys.stderr)
         exit(0)
     except EOFError:
+        print("\n\nExiting the script...", file=sys.stderr)
         exit(0)
     except Exception as e:
-        print(f"[ ERROR ] {name} {__version__} ran into a fatal error!:\n"
-              f"{type(e).__name__}{e.__traceback__}{e}", file=sys.stderr)
+        print(f"[{ansi.RED} ERROR {ansi.END}] {name} {__version__} ran into a fatal error!:\n"
+              f"\n{type(e).__name__}:{ansi.RED} {e}{ansi.END}\n\n{
+              traceback.format_exc(6)}", file=sys.stderr)
+        print("Report this issue to the developer on github", file=sys.stderr)
 
 
 if __name__ == "__main__":

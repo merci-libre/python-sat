@@ -5,17 +5,35 @@ argument
 """
 
 import datetime
+import sys
 # system import
 try:
     from . import ansi
+    from .errors import eprint
 except ImportError:
     import ansi
-log_wrapped = {}
-log_no_color = {}
-log_errors = {}
+    from errors import eprint
 
 
-class log:
+class __globals:
+    lines_written = 0
+
+
+def __init__():
+    __globals.lines_written += 1
+
+
+class NoColor:
+    log = {}
+    log_errors = {}
+
+
+class Color:
+    log = {}
+    log_errors = {}
+
+
+class logging:
     id = 0
     error_id = 0
 
@@ -25,74 +43,155 @@ def error(*args):
     Write an error message to the log, and to an
     errors section within the log file.
     """
-    log.id += 1
-    log.error_id += 1
+    color = ansi.RED
+    weight = ansi.BOLD
+
+    time = datetime.datetime.now()
+    logging.id += 1
+    logging.error_id += 1
     message = str()
     for message_str in args:
         message += message_str
 
-    fmessage = f"[ERROR]: {message}{ansi.END}"
-    colored_message = f"{ansi.RED}{ansi.UNDERLINE}{fmessage}"
+    # information
+    log_info = f"[id={logging.id}::{time}]"
+    log_type = "[ERROR]"
 
-    log_wrapped[log.id] = colored_message
-    log_errors[(log.error_id, log.id)] = fmessage
-    log_no_color[log.id] = fmessage
+    # coloring
+    uncolored = f"{log_info}{log_type}{message}"
+    colored_message = f"{log_info}{color}{log_type}{ansi.END}: {message}"
+
+    # write to logs.
+    Color.log[logging.id] = colored_message
+    NoColor.log[logging.id] = uncolored
+
+    # write to separate logs.
+    log_info = f"[id={logging.id};eid={logging.error_id}::{time}]"
+    uncolored = f"{log_info}{log_type}{message}"
+    colored_message = f"{log_info}{color}{log_type}{ansi.END}: {message}"
+    Color.log_errors[(logging.error_id, logging.id)] = colored_message
+    NoColor.log_errors[(logging.error_id, logging.id)] = uncolored
+
+
+def start(*args):
+    time = datetime.datetime.now()
+    """
+    Write a start message to the log
+    """
+    color = ansi.BLUE
+    logging.id += 1
+
+    message = str()
+    for message_str in args:
+        message += message_str
+
+    # information
+    log_info = f"[id={logging.id}::{time}]"
+    log_type = "(START):"
+
+    # coloring
+    uncolored = f"{log_info}{log_type}{message}"
+    colored_message = f"{log_info}{ansi.BOLD}{
+        color}{log_type}{message}{ansi.END}"
+
+    # write to logs.
+    Color.log[logging.id] = colored_message
+    NoColor.log[logging.id] = uncolored
 
 
 def notify(*args):
+    time = datetime.datetime.now()
     """
     Write a notification based message to the log
     """
-    log.id += 1
+    color = ansi.YELLOW
+    logging.id += 1
 
     message = str()
     for message_str in args:
         message += message_str
 
-    fmessage = f"[NOTICE] {message}"
-    colored_message = f"{ansi.YELLOW}{fmessage}"
+    # information
+    log_info = f"[id={logging.id}::{time}]"
+    log_type = "[NOTICE]"
+
+    # coloring
+    uncolored = f"{log_info}{log_type} {message}"
+    colored_message = f"{log_info}{ansi.BOLD}{
+        color}{log_type}{message}{ansi.END}"
 
     # write to logs.
-    log_wrapped[log.id] = colored_message
-    log_no_color[log.id] = fmessage
+    Color.log[logging.id] = colored_message
+    NoColor.log[logging.id] = uncolored
+
+
+def info(*args):
+    time = datetime.datetime.now()
+    """
+    Write information on values to the log
+    """
+    color = ansi.LIGHT_BLUE
+
+    logging.id += 1
+    message = str()
+    for message_str in args:
+        message += message_str
+
+    # information
+    log_info = f"[id={logging.id}::{time}]"
+    log_type = "(info)"
+
+    # coloring
+    uncolored = f"{log_info}{log_type} {message}"
+    colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
+
+    # write to logs.
+    Color.log[logging.id] = colored_message
+    NoColor.log[logging.id] = uncolored
 
 
 def write(*args):
+    time = datetime.datetime.now()
     """
     Write a standard message to the log
     """
+    color = ansi.GREEN
 
-    log.id += 1
+    logging.id += 1
     message = str()
     for message_str in args:
         message += message_str
 
-    fmessage = f"[OK] {message}"
-    colored_message = f"{ansi.GREEN}{fmessage}"
+    # information
+    log_info = f"[id={logging.id}::{time}]"
+    log_type = "(OK)"
+
+    # coloring
+    uncolored = f"{log_info}{log_type}{message}"
+    colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
 
     # write to logs.
-    log_wrapped[log.id] = colored_message
-    log_no_color[log.id] = fmessage
+    Color.log[logging.id] = colored_message
+    NoColor.log[logging.id] = uncolored
 
 
-class __formatted:
-    """
-    Formats for the ID string
-    """
+def __clear_log():
+    for i in range(__globals.lines_written):
+        sys.stderr.write('\x1b[1A')
+        sys.stderr.write('\x1b[2K')
 
-    def __init__(self, id, error_id=0):
-        self.error_log_id_format = f"[ error id: {error_id}::(log_id: {id}) ]:"
-        self.log_id_format = f"[ message id: {id} ]:"
+    __globals.lines_written = 0
 
 
-def print_log():
-    for id, message in log_wrapped.items():
-        print(f"{ansi.PURPLE}{__formatted(id).log_id_format}  {message}")
-    print(f"{ansi.BLUE}== [ END OF MAIN THREAD ] ==\n")
+def print_log(clear=False, initial=False):
+    if clear and not initial:
+        __clear_log()
+    for id in Color.log.keys():
+        eprint(f"{Color.log.get(id)}",)
     # print the errors
-    for (error_id, id), error in log_errors.items():
-        print(f"{ansi.PURPLE}{__formatted(id, error_id).error_log_id_format}:\n{
-              ansi.RED}{ansi.UNDERLINE}{error}")
+    eprint("\n\nErrors that occurred:")
+    for (error_id, id) in Color.log_errors.keys():
+        eprint(f"{Color.log_errors.get((error_id, id))}")
 
 
 def write_log():
@@ -108,20 +207,22 @@ def write_log():
     # set the userid so that root does not own the file.
     with open(f"/tmp/sat_log{unix_timestamp}.log", "w") as logfile:
         # write out the main log.
-        for id, message in log_no_color.items():
-            logfile.write(f"{__formatted(id).log_id_format}\n{message}\n")
-        logfile.write("== [ END OF MAIN THREAD ] ==\n")
+        for id in NoColor.log.keys():
+            logfile.write(f"{NoColor.log.get(id)}\n")
 
         # write the errors.
-        for (error_id, id), error in log_errors.items():
+        for (error_id, id) in NoColor.log_errors.keys():
             logfile.write(
-                f"{__formatted(id, error_id).error_log_id_format}\n{error}\n")
+                f"{NoColor.log_errors.get(error_id, id)}")
     logfile.close()
-    print(f"logfile written to {logfile}")
+    eprint(f"logfile written to {logfile}")
 
 
 if __name__ == "__main__":
     write("hello", "world", "no")
     notify("[THIS IS A NOTIFICATION]", '\n\tdo something')
     error("this", "\nis an ", "error")
-    read_log()
+    write("hello", "world", "no")
+    notify("[THIS IS A NOTIFICATION]", '\n\tdo something')
+    error("this", "\nis an ", "error")
+    print_log()

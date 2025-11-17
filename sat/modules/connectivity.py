@@ -67,27 +67,28 @@ closed_ports = {}
 
 def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
     log.write("attempting to connect via http...")
+    rs = False
     try:
         response = requests.get(
             f"http://{ip_address}:{port}", timeout=main_timeout)
         log.write(f"[http]: ABLE TO CONNECT VIA HTTP to {ip_address}:{port}!")
         log.info(f"Connected to {port} via HTTP on {
                  ip_address}, response={response}")
-
-        return True
+        rs = True
     except requests.exceptions.Timeout:
         log.error(
             f"[http]: HTTP connection timed out for {ip_address} on port {port}")
-        return False
+        rs = False
     except requests.exceptions.ConnectionError:
         log.error(
             f"[http]: HTTP reached max retries for {ip_address} on port {port}")
-        return False
+        rs = False
     except Exception as e:
         log.error(
             f"HTTP connection to {port} for {ip_address} failed with the",
             f"following error message: {type(e).__name__}")
-        return False
+    del ip_address, port, main_timeout
+    return rs
 
 
 def test_ports(ip_address: str, timeout: int) -> None:
@@ -143,7 +144,7 @@ def ping(ip_address: str, main_timeout: int, count=4) -> bool:
         log.error(f"{ip_address} responded with {packets_received} packets")
         log.info(f"ip: {ip_address}, packet_loss:{
                  dropped}, timeout:{main_timeout}")
-
+    del dropped, main_timeout, ip_address, packets_received
     return response
 
 
@@ -161,14 +162,21 @@ def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
         else:
             connections[ip_address] = [False, None]
             return  # stop the thread
+        del ping_ok
     except Exception as e:
         # any errors in ping will just update the values
         # as if it never connected.
         log.error(f"[Test][Ping]: {e}")
         connections[ip_address] = [False, None]
         return False
-    if ports is not None and scan:
-        log.notify(f"checking port status on {ip_address} on ports: {ports}")
-        test_ports(ip_address, timeout)
-    else:
-        return  # stop the thread
+
+    try:
+        if ports is not None and scan:
+            log.notify(f"checking port status on {
+                       ip_address} on ports: {ports}")
+            test_ports(ip_address, timeout)
+        else:
+            return  # stop the thread
+    except Exception as e:
+        log.error(e)
+        return

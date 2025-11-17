@@ -60,6 +60,7 @@ def get_toml_path() -> str:
     if homedir == "" or configuration == "":
         raise errors.TomlFiles.TomlFileMissing(path_to_config)
 
+    del configuration, homedir
     return path_to_config
 
 
@@ -93,6 +94,7 @@ def write_toml(filename: str, server_count=5):
         except PermissionError:
             raise errors.TomlFiles.Permissions.WritePermissions(
                 f"{filename}")
+    del filename
 
 
 def parse_toml(tomlfile: str) -> dict:

@@ -69,6 +69,7 @@ def error(*args):
     log_info = f"[id={logging.id};eid={logging.error_id}::{time}]"
     uncolored = f"{log_info}{log_type}{message}"
     colored_message = f"{log_info}{color}{log_type}{ansi.END}: {message}"
+    del message, time
     Color.log_errors[(logging.error_id, logging.id)] = colored_message
     NoColor.log_errors[(logging.error_id, logging.id)] = uncolored
 
@@ -94,6 +95,7 @@ def start(*args):
     colored_message = f"{log_info}{ansi.BOLD}{
         color}{log_type}{message}{ansi.END}"
 
+    del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored
@@ -120,6 +122,7 @@ def notify(*args):
     colored_message = f"{log_info}{ansi.BOLD}{
         color}{log_type}{message}{ansi.END}"
 
+    del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored
@@ -145,6 +148,7 @@ def info(*args):
     uncolored = f"{log_info}{log_type} {message}"
     colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
 
+    del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored
@@ -170,6 +174,7 @@ def write(*args):
     uncolored = f"{log_info}{log_type}{message}"
     colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
 
+    del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored

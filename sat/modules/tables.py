@@ -105,6 +105,9 @@ def __draw_ip_table_format(ip_address: str,
             status = "TIMED OUT"
             connected = f"{ansi.RED}{status}{__globals.Text.table_color}"
 
+    # free some heap memory.
+    del responsive
+
     # ICMP response spacing
     con_spacing = " "*(__globals.Text.max_con_length-status.__len__()+1)
     connected = f"{connected}{con_spacing}"

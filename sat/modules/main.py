@@ -194,6 +194,7 @@ def run(name: str, version: str):
         exit(0)
     if args.new:
         toml_parser.write_toml(args.new[0])
+        exit(0)
     threads: list = __create_threads(args, servers, timeout)
     # get the servers information from the toml file and parse it
     log.write(f"TOML {servers_tomlfile} loaded!")

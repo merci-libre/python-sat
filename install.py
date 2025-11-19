@@ -167,14 +167,20 @@ def install():
     try:
         import icmplib
         import requests
-        getdeps = True
     except ImportError:
-        print("installing dependencies...")
-        getdeps = resolve_dependencies(dependencies)
+        print("As of python-sat version 1.2,",
+              "you don't need the dependencies,", file=sys.stderr)
+        print("however-- it is highly recommended that you use,"
+              "the your system package manager to install", file=sys.stderr)
+        print("the packages as system packages, or through the venv--",
+              "as the external libraries inside of this repository", file=sys.stderr)
+        print("will not be updated in future versions.", file=sys.stderr)
 
-    if not getdeps:
-        print("failed to install dependencies")
-        exit(1)
+        print("\n{package_manager_install} python-icmplib python-requests")
+        print("(on debian systems): apt-get install,"
+              "python-icmplib python-requests")
+        print("\nIf you are on windows, you can use python venv--",
+              "or just safely ignore this message.")
 
     config_dir = make_config()
     try:
@@ -182,7 +188,13 @@ def install():
         print(f"created configuration directory @ {config_dir}")
     except FileExistsError:
         pass
-    if os.path.exists(f"{config_dir}/servers.toml"):
+
+    # change the divider depending on windows or posix
+    dirvider = "/"
+    if os.name == "nt":
+        dirvider = "\\"
+
+    if os.path.exists(f"{config_dir}{dirvider}servers.toml"):
         print("servers.toml exists!", file=sys.stderr)
     else:
         print(f"creating servers.toml in {config_dir}")

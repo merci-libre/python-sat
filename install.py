@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pip
 import os
 import sys
@@ -15,7 +16,7 @@ class INSTALLFLAGS:
     # XDG compliant directory
     config_dir = 'default'
     # install to system. (LINUX ONLY)
-    system_install = False
+    system_install = True
 
 
 def create_servers_toml(config_dir: str):
@@ -82,6 +83,79 @@ def resolve_dependencies(dependencies: list):
     return getdeps
 
 
+class ReadOneChar:
+
+    def __init__(self):
+        import tty
+        import sys
+        import termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+
+        try:
+            tty.setraw(sys.stdin.fileno())
+            choice = sys.stdin.read(1)
+
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        match choice:
+            case '1':
+                self.choice = "sudo"
+            case '2':
+                self.choice = "doas"
+            case 'q' | 'Q':
+                exit(0)
+            case _:
+                print(f"{choice} unknown input, please try again",
+                      file=sys.stderr)
+                raise ValueError
+
+
+def system_install_unix(major: int, minor: int):
+    lib_path = f"/usr/lib/python{major}.{
+        minor}/site-packages/serveradmintool"
+    bin_path = "/usr/local/bin"
+    """
+    Installs the system packages via the install.sh
+    script provided in the directory.
+
+    Only allowed for POSIX based machines at the moment.
+    """
+    # do a system install for linux machines.
+    if os.name == "posix" and INSTALLFLAGS.system_install:
+        sudo = False
+        doas = False
+        if os.path.exists("/sbin/sudo"):
+            print("sudo detected...")
+            command = "sudo"
+            sudo = True
+        if os.path.exists("/sbin/doas"):
+            print("doas detected...")
+            doas = True
+            command = "doas"
+
+        if sudo and doas:
+            while True:
+                print("\nyou have both `sudo` and `doas` on your machine!")
+                print("please select one option to continue:\n")
+                print("[1] sudo")
+                print("[2] doas")
+                print("[q]uit\n")
+                try:
+                    sys.stderr.write("choice: \n")
+                    choice = ReadOneChar().choice
+                except ValueError:
+                    continue
+                command = choice
+                break
+
+            print(f"Running ./install.sh with {command}")
+
+        print(f"installing libraries to {lib_path}")
+        print(f"installing sat to {bin_path}")
+        os.system(f"{command} ./install.sh {bin_path} {lib_path}")
+
+
 def install():
     dependencies = ["icmplib", "requests"]
     """
@@ -116,4 +190,11 @@ def install():
 
 
 if __name__ == "__main__":
+    name = "python-sat"
+    major = sys.version_info.major
+    minor = sys.version_info.minor
+    if major < 3 and minor < 11:
+        print(f"Error: You need python version >= 3.11 to use {
+              name}.\n Currently on version {major}.{minor}", file=sys.stderr)
     install()
+    system_install_unix(major, minor)

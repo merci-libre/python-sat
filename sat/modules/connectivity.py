@@ -19,7 +19,6 @@ also creates and stores the hashmap dictionaries for the program:
 ```
 """
 import socket
-import time
 try:
     from . import log
     from .errors import eprint
@@ -41,15 +40,6 @@ try:
     import requests
     has_dep2 = True
 
-except ModuleNotFoundError:
-    eprint("\033[0;31m[ERROR]\033[0m: You are missing essential external"
-           "libraries required to run this project.")
-    if not has_dep1:
-        eprint(f"Missing-> {dep1}")
-    if not has_dep2:
-        eprint(f"Missing-> {dep2}")
-    exit(1)
-
 except ImportError:
     """
     Use the built-in dependencies
@@ -58,8 +48,15 @@ except ImportError:
     Notify the user to try and install them
     directly.
     """
+    from . import ansi
+    eprint(f"{ansi.YELLOW}[NOTICE]{
+           ansi.END} you are using the built-in dependencies!")
+    eprint(f"{ansi.YELLOW}[NOTICE]{
+           ansi.END} Please read:",
+           "https://github.com/merci-libre/python-sat?tab=readme-ov-file#system-packages")
     from .external import requests
     from .external import icmplib
+
 
 # these are globally accessible throughout the entire program
 connections = {}

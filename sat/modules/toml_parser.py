@@ -79,7 +79,7 @@ def write_toml(filename: str, server_count=5):
         try:
             # top header
             toml.write("[servers]\n")
-            for i in range():
+            for i in range(server_count):
                 toml.write("\n[servers.{server_name}]")
                 toml.write(
                     '\n\tip = # enter an IP address here, type="string"')

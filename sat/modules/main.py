@@ -5,6 +5,7 @@ any missing library modules, fatal errors, and mismatched python versions.
 """
 
 # python venv + standard modules
+import os
 import time
 import threading
 
@@ -193,6 +194,9 @@ def run(name: str, version: str):
         print(f"{name} ver. {version}")
         exit(0)
     if args.new:
+        if os.path.exists(args.new):
+            eprint(f"{args.new} exists!")
+            exit(1)
         toml_parser.write_toml(args.new[0])
         exit(0)
     threads: list = __create_threads(args, servers, timeout)

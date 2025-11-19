@@ -181,7 +181,7 @@ def install():
         print("will not be updated in future versions.", file=sys.stderr)
 
         print("\n{package_manager_install} python-icmplib python-requests")
-        print("(on debian systems): apt-get install,"
+        print("(on debian systems): apt-get install",
               "python-icmplib python-requests")
         print("\nIf you are on windows, you can use python venv--",
               "or just safely ignore this message.")

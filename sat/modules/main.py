@@ -194,8 +194,8 @@ def run(name: str, version: str):
         print(f"{name} ver. {version}")
         exit(0)
     if args.new:
-        if os.path.exists(args.new):
-            eprint(f"{args.new} exists!")
+        if os.path.exists(args.new[0]):
+            eprint(f"{args.new[0]} exists!")
             exit(1)
         toml_parser.write_toml(args.new[0])
         exit(0)

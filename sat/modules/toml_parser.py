@@ -72,7 +72,7 @@ def write_toml(filename: str, server_count=5):
     """
     # argument parsing
     if filename.__contains__(".toml"):
-        filename.replace(".toml", "")
+        filename = filename.replace(".toml", "")
 
     # actual writing
     with open(f"{filename}.toml", 'w') as toml:

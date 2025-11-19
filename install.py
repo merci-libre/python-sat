@@ -14,6 +14,8 @@ class INSTALLFLAGS:
 
     # XDG compliant directory
     config_dir = 'default'
+    # install to system. (LINUX ONLY)
+    system_install = False
 
 
 def create_servers_toml(config_dir: str):
@@ -35,7 +37,6 @@ def create_servers_toml(config_dir: str):
 
 
 def make_config():
-    print(f"installing sat for {os.name}")
     """
     although it says linux/windows, it is system agnostic
     """
@@ -62,22 +63,23 @@ def make_config():
         raise Exception
     path_to_config = f"{homedir}{configuration}"
 
-    print(f"creating configuration directory @ {path_to_config}")
     return path_to_config
 
 
 def resolve_dependencies(dependencies: list):
     pipargs = ["install"]
+    getdeps = False
     for i in dependencies:
         pipargs.append(i)
     try:
         if pip.main(pipargs) == 0:
             print("dependencies installed!")
-            return True
+            getdeps = True
+    except pip._internal.exceptions.ExternallyManagedEnvironment:
+        print("We are in a ExternallyManagedEnvironment, install with venv.")
     except Exception as e:
         print(f"Could not resolve dependencies, or pip failed:\n {e}")
-        return False
-    return False
+    return getdeps
 
 
 def install():
@@ -86,6 +88,7 @@ def install():
     installs the program.
     """
     # get dependencies
+    print(f"installing sat for {sys.platform} machines")
 
     try:
         import icmplib
@@ -96,15 +99,20 @@ def install():
         getdeps = resolve_dependencies(dependencies)
 
     if not getdeps:
-        print("failed to install dependencies!!!")
+        print("failed to install dependencies")
         exit(1)
 
     config_dir = make_config()
     try:
         os.makedirs(config_dir)
+        print(f"created configuration directory @ {config_dir}")
     except FileExistsError:
         pass
-    create_servers_toml(config_dir)
+    if os.path.exists(f"{config_dir}/servers.toml"):
+        print("servers.toml exists!", file=sys.stderr)
+    else:
+        print(f"creating servers.toml in {config_dir}")
+        create_servers_toml(config_dir)
 
 
 if __name__ == "__main__":

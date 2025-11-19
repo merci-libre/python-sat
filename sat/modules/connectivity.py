@@ -51,13 +51,15 @@ except ModuleNotFoundError:
     exit(1)
 
 except ImportError:
-    eprint("\033[0;31m[ERROR]\033[0m: You are missing essential external"
-           "libraries required to run this project.")
-    if not has_dep1:
-        eprint(f"Missing-> {dep1}")
-    if not has_dep2:
-        eprint(f"Missing-> {dep2}")
-    exit(1)
+    """
+    Use the built-in dependencies
+    NOTICE: these packages were installed
+    through the venv, and are not updated.
+    Notify the user to try and install them
+    directly.
+    """
+    from .external import requests
+    from .external import icmplib
 
 # these are globally accessible throughout the entire program
 connections = {}

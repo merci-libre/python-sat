@@ -199,7 +199,7 @@ def print_log(clear=False, initial=False):
         eprint(f"{Color.log_errors.get((error_id, id))}")
 
 
-def write_log():
+def write_log(out_file=""):
     """
     Write the log out to a file. Creates the logfile:
     `sat-{CURRENT_UNIX_TIME_STAMP}.log`
@@ -207,20 +207,24 @@ def write_log():
     """
     unix_timestamp = str(datetime.datetime.utcnow()).replace(" ", "_").replace(
         ":", "-")
+    out_file = out_file.replace(".log", "")
+
+    if out_file == "":
+        out_file = f"sat_{unix_timestamp}"
     # format the unix_timestamp to fit naming convention.
 
     # set the userid so that root does not own the file.
-    with open(f"/tmp/sat_log{unix_timestamp}.log", "w") as logfile:
+    with open(f"{out_file}.log", "w") as logfile:
         # write out the main log.
         for id in NoColor.log.keys():
             logfile.write(f"{NoColor.log.get(id)}\n")
 
+        logfile.writelines("\n== Errors that occurred ==\n\n")
         # write the errors.
         for (error_id, id) in NoColor.log_errors.keys():
-            logfile.write(
-                f"{NoColor.log_errors.get(error_id, id)}")
+            logfile.write(f"{NoColor.log_errors.get((error_id, id))}\n")
     logfile.close()
-    eprint(f"logfile written to {logfile}")
+    eprint(f"logfile written to {out_file}.log")
 
 
 if __name__ == "__main__":

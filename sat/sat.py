@@ -6,7 +6,7 @@ This file is our initialization file for the entire project.
 """
 name = "sat"
 desc = "Checks accessibility of pre-defined servers"
-__version__ = "1.01"
+__version__ = "1.2"
 __author__ = "Jonathan Villanueva (westwardfishdme)"
 
 
@@ -20,11 +20,11 @@ def start():
     """
     # try to import these libraries
     try:
+        from serveradmintool.modules import main
+        from serveradmintool.modules import ansi
+    except ImportError:
         from .modules import main
         from .modules import ansi
-    except ImportError:
-        from modules import main
-        from modules import ansi
 
     try:
         # main.check_priv()  # the error is handled within the file already...

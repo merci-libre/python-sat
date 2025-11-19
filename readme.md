@@ -14,14 +14,24 @@
 - [Server List Formatting](<#Server-List-Formatting>)
 - [Valid Key/Value Pairs](<#Valid-KeyValue-pairs>)
 
+**Contributing**
+- [Contributing](<#Contributing>)
+- [Licensing](<#Licensing>)
+- [Reporting Issues](<#Reporting-Issues>)
+
 # Description
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to
 maintain a list of connected servers.
 
 ## Requirements
-`python-sat` was developed and tested on python **version 3.13.7**
-however, version >3.11  should be sufficient enough.
+`python-sat` was developed and tested on Arch Linux on python **version 3.13.7** 
+however, versions >3.11 should be sufficient enough.
+
+I have yet to test this on windows, however installing 
+[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/)
+is highly recommended before using this tool, mostly to
+avoid any unforseen issues. 
 
 ## Dependencies
 `python-sat` requires 2 external libraries:
@@ -55,8 +65,13 @@ python install.py
 
 ## External Python VENV or using system packages.
 
-To install this package within the python VENV, you can use the VENV tools within
-your specific python venv directory.
+python-sat comes with a backup built-in dependency library for external
+packages in-case you don't have those packages installed on your system.
+you can find them within the [external directory](</sat/modules/external>)
+
+It is highly recommended that you run the install script or get the packages
+through your system's package manager OR if necessary, through the venv-based
+version of pip
 
 # System Packages
 If you are on Arch Linux, or another distribution which
@@ -166,4 +181,25 @@ what `sat` interprets the information within `servers.toml`.
 - `hostname`  : "foobar"
 - `ports`: `[443, 22, 21]`
 - `scan`: True
+
+# Contributing
+To contribute to this project please fork the repository or add any suggestions through the
+[issues](https://github.com/merci-libre/python-sat/issues) tab and list the idea as an enhancement.
+otherwise please read the [licensing](<#Licensing>) section down below.
+
+## Licensing
+As per the license agreement with the GPL-version 2.0, you as the user are not only allowed
+to view and audit the source code of this project, but any contributions made in forks of the
+code must be publically accessible and disclosed as per described in section 3 of the 
+GPL-v.2 license. Any source code published must maintain in accordance with the GPL-v2.
+
+If you do fork this repository, please credit this original repository in the readme.
+Thanks!
+
+## Reporting Issues
+If you encounter a bug while running this project, please submit a bug-report to
+the [issues](https://github.com/merci-libre/python-sat/issues) tab.
+
+I'll try to fix as much as I can, however if you have code available that fixes an issue--
+fork the repository, make the additions, and submit a pull-request. (not yet implemented)
 

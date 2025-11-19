@@ -173,7 +173,11 @@ def run(name: str, version: str):
     args = arguments.parse(name)
     servers_tomlfile = args.toml_file
     timeout = args.timeout
-    servers = toml_parser.parse_toml(servers_tomlfile)
+    try:
+        servers = toml_parser.parse_toml(servers_tomlfile)
+    except errors.TomlFiles.TomlFileMissing:
+        eprint(f"{servers_tomlfile}.toml does not exist!")
+        exit(1)
 
     # set the timeout feature.
     if args.timeout < 2 and not args.timeout == 0:

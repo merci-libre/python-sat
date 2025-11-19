@@ -112,15 +112,15 @@ class ReadOneChar:
 
 
 def system_install_unix(major: int, minor: int):
-    lib_path = f"/usr/lib/python{major}.{
-        minor}/site-packages/serveradmintool"
-    bin_path = "/usr/local/bin"
     """
     Installs the system packages via the install.sh
     script provided in the directory.
 
     Only allowed for POSIX based machines at the moment.
     """
+    lib_path = f"/usr/lib/python{major}.{
+        minor}/site-packages/serveradmintool"
+    bin_path = "/usr/local/bin"
     # do a system install for linux machines.
     if os.name == "posix" and INSTALLFLAGS.system_install:
         sudo = False
@@ -154,6 +154,10 @@ def system_install_unix(major: int, minor: int):
         print(f"installing libraries to {lib_path}")
         print(f"installing sat to {bin_path}")
         os.system(f"{command} ./install.sh {bin_path} {lib_path}")
+    if os.name == "nt":
+        print("[ERROR] system installs are only allowed for macos/linux",
+              "at the moment, sorry...")
+        print("however you can use WSL if you'd like :) ")
 
 
 def install():

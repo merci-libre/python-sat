@@ -179,6 +179,9 @@ def run(name: str, version: str):
     except errors.TomlFiles.TomlFileMissing:
         eprint(f"{servers_tomlfile}.toml does not exist!")
         exit(1)
+    except errors.TomlFiles.DeserializationFailure:
+        eprint(f"{servers_tomlfile} doesn't look like a toml file...")
+        exit(1)
 
     # set the timeout feature.
     if args.timeout < 2 and not args.timeout == 0:

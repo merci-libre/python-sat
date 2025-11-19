@@ -206,10 +206,10 @@ def run(name: str, version: str):
     # handle joining threads
     log.notify("[main] Joining threads...")
     log.info(f"threads to join: {threads.__len__()}")
-    if args.verbose:
-        Output.log()
-
     __join_threads(threads, timeout, args)
+
+    if args.verbose:
+        Output.table(True)
 
     if args.output_log:
         log.write_log(args.output_log[0])

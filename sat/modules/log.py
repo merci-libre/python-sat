@@ -193,10 +193,13 @@ def print_log(clear=False, initial=False):
         __clear_log()
     for id in Color.log.keys():
         eprint(f"{Color.log.get(id)}",)
+        __globals.lines_written += 1
     # print the errors
     eprint("\n\nErrors that occurred:")
+    __globals.lines_written += 1
     for (error_id, id) in Color.log_errors.keys():
         eprint(f"{Color.log_errors.get((error_id, id))}")
+        __globals.lines_written += 1
 
 
 def write_log(out_file=""):

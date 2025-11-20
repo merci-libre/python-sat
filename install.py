@@ -3,6 +3,7 @@ import pip
 import time
 import os
 import sys
+import pathlib
 
 # XDG COMPLIANT
 
@@ -44,7 +45,7 @@ def make_config():
     """
     LINUX = (os.name == "posix")
     WINDOWS = (os.name == "nt")
-    homedir = ""
+    homedir = f"{pathlib.Path.home()}"
     configuration = ""
 
     if LINUX:
@@ -55,8 +56,8 @@ def make_config():
             configuration = INSTALLFLAGS.config_dir
 
     if WINDOWS:
-        homedir = os.path.expanduser("~user")
         print(homedir)
+        homedir = os.path.expanduser("~user")
         if INSTALLFLAGS.config_dir == "default":
             configuration = f"\\Documents\\server_admin_tool\\"
         else:

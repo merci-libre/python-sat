@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import pip
+import time
 import os
 import sys
 
@@ -183,10 +184,21 @@ def install():
         print("\n{package_manager_install} python-icmplib python-requests")
         print("(on debian systems): apt-get install",
               "python-icmplib python-requests")
-        print("\nIf you are on windows, you can use python venv--",
-              "or just safely ignore this message.")
+        print("\nIf you are on windows, please follow the build instructions",
+              "in the readme.md installation section titled ## Windows")
+        time.sleep(4)
+
+        if os.name == "nt":
+            print("installing dependencies for windows...")
+
+            for i in range(3, 0, -1):
+                print(f"in {i}")
+                time.sleep(1)
+            os.system("python -m build")
+            os.system("pip install .")
 
     config_dir = make_config()
+
     try:
         os.makedirs(config_dir)
         print(f"created configuration directory @ {config_dir}")

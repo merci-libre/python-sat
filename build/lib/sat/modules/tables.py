@@ -1,0 +1,148 @@
+from . import ansi
+from . import log
+import sys
+
+
+class UpdateTables():
+    """
+    This updates the port maps for the table.
+    """
+    open_ports = {}
+    closed_ports = {}
+    connections = {}
+
+    def __init__(self, open_ports: {},
+                 closed_ports: {},
+                 connections: {}):
+        log.notify(f"[From UpdateMaps]: Connections Made: {
+                   self.closed_ports}")
+        log.notify(f"[From UpdateMaps]: Open Port Tables: {
+                   self.open_ports}")
+        log.notify(f"[From UpdateMaps]: Closed Port Tables: {
+                   self.closed_ports}")
+        UpdateTables.open_ports = open_ports
+        UpdateTables.closed_ports = closed_ports
+        UpdateTables.connections = connections
+
+
+class __globals:
+    """
+    Creates a global variable class for this module.
+    Used to print the table, format it correctly, and
+    does some string wizardry.
+    """
+    # text
+    class Text:
+        lines_written = 0
+        ip_address = "IP ADDRESS"
+        icmp_message = "ICMP PING?"
+        open_ports = "open ports"
+        closed_ports = "closed ports"
+        table_header = f" {ip_address}      {
+            icmp_message}        {ansi.GREEN}[{open_ports}] ::  {ansi.RED}[{closed_ports}]{ansi.END}"
+        # for calculations
+        max_ip_length = "000.000.000.000".__len__()
+        max_con_length = "awaiting...".__len__()-1
+        # bar strings
+        ip_bar = '━' * max_ip_length
+        connected_bar = '━'*(max_con_length+2)
+        pure_ip_space = " " * max_ip_length
+        pure_connect_sp = ' ' * max_con_length
+        # TABLE COLORING
+        table_color = ansi.BLUE
+        # this is the bottom bar.
+        bottom = f"{table_color}┗{ip_bar}┻{connected_bar}┛{ansi.END}"
+
+
+def __draw_ip_table_format(ip_address: str,
+                           count: int):
+    """
+    Draws out the table. Only available within this specific module.
+    """
+    ports = UpdateTables.open_ports.get(ip_address)
+    closed_ports = UpdateTables.closed_ports.get(ip_address)
+    responsive = UpdateTables.connections.get(ip_address)[0]
+
+    match count:
+        # top
+        case 0:
+            left_corner = "┏"
+            divider = "┳"
+            closer = "┓"
+        # elsewhere
+        case _:
+            left_corner = "┣"
+            divider = "╋"
+            closer = "┫"
+
+    """
+    Variables get renamed so that the formatting list is slightly more readable
+    """
+
+    # bars
+    ip_bar = __globals.Text.ip_bar
+    connected_bar = __globals.Text.connected_bar
+
+    # ip address spacing
+    ip_spacing = " "*(__globals.Text.max_ip_length-ip_address.__len__())
+    ip_address = f"{ansi.END}{ip_address}{
+        ip_spacing}{__globals.Text.table_color}"
+
+    # get ports:
+
+    # calculate ICMP response:
+    match responsive:
+        case "awaiting":
+            status = "awaiting..."
+            connected = f"{ansi.LIGHT_BLUE}{
+                status}{__globals.Text.table_color}"
+
+        case True:
+            status = "OK"
+            connected = f"{ansi.GREEN}{status}{__globals.Text.table_color}"
+
+        case _:
+            status = "TIMED OUT"
+            connected = f"{ansi.RED}{status}{__globals.Text.table_color}"
+
+    # free some heap memory.
+    del responsive
+
+    # ICMP response spacing
+    con_spacing = " "*(__globals.Text.max_con_length-status.__len__()+1)
+    connected = f"{connected}{con_spacing}"
+
+    # Table Divider:
+    print(f"{__globals.Text.table_color}{left_corner}{ip_bar}{
+        divider}{connected_bar}{closer}{ansi.END}")
+    # Table Entry:
+    print(f"{__globals.Text.table_color}┃{ip_address}┃{
+        connected} ┃ ==> {ansi.GREEN}{ports} :: {ansi.RED}{closed_ports}{ansi.END}")
+    __globals.Text.lines_written += 2
+
+
+def __clear_table():
+    log.notify("CLEARING TABLES")
+    for i in range(__globals.Text.lines_written):
+        sys.stdout.write('\x1b[1A')
+        sys.stdout.write('\x1b[2K')
+    __globals.Text.lines_written = 0
+
+
+def draw_table(initial=False):
+    """
+    Updates the table with values, and draws the table
+    this value is callable from main
+    """
+    count = 0
+    if not initial:
+        __clear_table()
+
+    # we have to print the top and
+    # bottom headers outside of the table.
+    print(__globals.Text.table_header)
+    for ip_address in UpdateTables.connections.keys():
+        __draw_ip_table_format(ip_address, count)
+        count += 1
+    print(__globals.Text.bottom)
+    __globals.Text.lines_written += 2

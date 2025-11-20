@@ -28,8 +28,8 @@ def start():
         from serveradmintool.modules import main
         from serveradmintool.modules import ansi
     except ImportError:
-        from .modules import main
-        from .modules import ansi
+        from modules import main
+        from modules import ansi
 
     try:
         main.run(name, __version__)

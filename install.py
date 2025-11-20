@@ -55,9 +55,10 @@ def make_config():
             configuration = INSTALLFLAGS.config_dir
 
     if WINDOWS:
-        homedir = os.path.expanduser("~home")
+        homedir = os.path.expanduser("~user")
+        print(homedir)
         if INSTALLFLAGS.config_dir == "default":
-            configuration = "\\Documents\\server_admin_tool\\"
+            configuration = f"\\Documents\\server_admin_tool\\"
         else:
             configuration = INSTALLFLAGS.config_dir
 

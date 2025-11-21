@@ -29,11 +29,11 @@ class Output():
     def log(clear=True, initial=False):
         log.print_log(clear, initial)
 
-    def table(initial):
-        tables.draw_table(initial)
+    def table(stderr, initial=True):
+        tables.draw_table(initial,)
 
-    def on_join(initial=False, clear=True, verbose=False):
-        tables.draw_table(initial)
+    def on_join(stderr, initial=False, clear=True, verbose=False):
+        tables.draw_table(initial, stderr)
         if initial:
             clear = False
         if verbose:
@@ -153,7 +153,7 @@ def __join_threads(threads: list, timeout: int, args):
     timeout = (timeout*2)+10
     for thread in threads:
         thread.join(timeout)
-        Output.on_join(verbose=args.verbose)
+        Output.on_join(args.stderr, verbose=args.verbose)
         log.write(f"[Main Thread]: {thread} joined!")
         log.info(f"[Updated Connections]:{tables.UpdateTables.connections}")
         # draw table
@@ -205,7 +205,7 @@ def run(name: str, version: str):
     threads: list = __create_threads(args, servers, timeout)
     # get the servers information from the toml file and parse it
     log.write(f"TOML {servers_tomlfile} loaded!")
-    Output.on_join(initial=True, verbose=args.verbose)
+    Output.on_join(args.stderr, initial=True, verbose=args.verbose)
 
     # create threads and draw our initial table after threads.
     del servers_tomlfile, servers
@@ -221,7 +221,7 @@ def run(name: str, version: str):
     __join_threads(threads, timeout, args)
 
     if args.verbose:
-        Output.table(True)
+        Output.table(args.sterrr, initial=True)
 
     if args.output_log:
         log.write_log(args.output_log[0])

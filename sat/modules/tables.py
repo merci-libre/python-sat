@@ -55,9 +55,10 @@ class __globals:
 
 
 def __draw_ip_table_format(ip_address: str,
-                           count: int):
+                           count: int, sysfile):
     """
     Draws out the table. Only available within this specific module.
+    sysfile=sys.stdout || sys.stderr
     """
     ports = UpdateTables.open_ports.get(ip_address)
     closed_ports = UpdateTables.closed_ports.get(ip_address)
@@ -114,35 +115,53 @@ def __draw_ip_table_format(ip_address: str,
 
     # Table Divider:
     print(f"{__globals.Text.table_color}{left_corner}{ip_bar}{
-        divider}{connected_bar}{closer}{ansi.END}")
+        divider}{connected_bar}{closer}{ansi.END}", file=sysfile)
     # Table Entry:
     print(f"{__globals.Text.table_color}┃{ip_address}┃{
-        connected} ┃ ==> {ansi.GREEN}{ports} :: {ansi.RED}{closed_ports}{ansi.END}")
+        connected} ┃ ==> {ansi.GREEN}{ports} :: {ansi.RED}{closed_ports}{ansi.END}",
+        file=sysfile)
     __globals.Text.lines_written += 2
 
 
-def __clear_table():
-    log.notify("CLEARING TABLES")
-    for i in range(__globals.Text.lines_written):
-        sys.stdout.write('\x1b[1A')
-        sys.stdout.write('\x1b[2K')
-    __globals.Text.lines_written = 0
+def __clear_table(stderr: bool):
+    """
+    Clears the table
+    the parameter 'output'
+    maps to stdout or stdin.
+    """
+    if stderr:
+        log.notify("CLEARING TABLES")
+        for i in range(__globals.Text.lines_written):
+            sys.stderr.write('\x1b[1A')
+            sys.stderr.write('\x1b[2K')
+        __globals.Text.lines_written = 0
+    else:
+        log.notify("CLEARING TABLES")
+        for i in range(__globals.Text.lines_written):
+            sys.stdout.write('\x1b[1A')
+            sys.stdout.write('\x1b[2K')
+        __globals.Text.lines_written = 0
 
 
-def draw_table(initial=False):
+def draw_table(initial=False, stderr=False):
     """
-    Updates the table with values, and draws the table
-    this value is callable from main
+    This function updates the table with values, and draws the table
+    this value is called in main.py
     """
+
     count = 0
     if not initial:
-        __clear_table()
+        __clear_table(stderr)
 
     # we have to print the top and
     # bottom headers outside of the table.
-    print(__globals.Text.table_header)
+    sysfile = sys.stdout
+    if stderr:
+        sysfile = sys.stderr
+
+    print(__globals.Text.table_header, file=sysfile)
     for ip_address in UpdateTables.connections.keys():
-        __draw_ip_table_format(ip_address, count)
+        __draw_ip_table_format(ip_address, count, sysfile)
         count += 1
-    print(__globals.Text.bottom)
+    print(__globals.Text.bottom, file=sysfile)
     __globals.Text.lines_written += 2

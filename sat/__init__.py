@@ -67,13 +67,10 @@ def create_servers_toml(config_dir: str):
 
 config_dir = make_config()
 
-try:
+if not os.path.exists(config_dir):
     os.makedirs(config_dir)
     print(f"created configuration directory @ {config_dir}")
-except FileExistsError:
-    pass
 
-# change the divider depending on windows or posix
 dirvider = "/"
 
 if os.path.exists(f"{config_dir}{dirvider}servers.toml"):

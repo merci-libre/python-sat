@@ -197,6 +197,10 @@ def system_install_unix(major: int, minor: int):
 
         print(f"installing libraries to {lib_path}")
         print(f"installing sat to {bin_path}")
+        if os.path.exists(f"{lib_path}"):
+            print(f"{lib_path} already exists!")
+            print(f"removing the directory...")
+            os.system(f"{command} rm -r {lib_path}")
         os.system(f"{command} ./install.sh {bin_path} {lib_path}")
     if os.name == "nt":
         print("[ERROR] system installs are only allowed for macos/linux",

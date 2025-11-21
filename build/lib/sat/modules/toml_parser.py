@@ -1,4 +1,5 @@
 import os
+import pathlib
 try:
     from . import errors
     from . import ansi
@@ -45,15 +46,13 @@ def get_toml_path() -> str:
     """
     LINUX = (os.name == "posix")
     WINDOWS = (os.name == "nt")
-    homedir = ""
+    homedir = f"{pathlib.Path.home()}"
     configuration = ""
 
     if LINUX:
-        homedir = os.path.expanduser('~')
         configuration = "/.config/server_admin_tool/"
 
     if WINDOWS:
-        homedir = os.path.expanduser("~home")
         configuration = "\\Documents\\server_admin_tool\\"
 
     path_to_config = f"{homedir}{configuration}servers.toml"

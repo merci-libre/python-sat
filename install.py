@@ -76,6 +76,8 @@ class MacOS:
                 for line in deps.readlines():
                     missingdeps.append(line.rstrip())
                 deps.close()
+            if missingdeps.__contains__(""):
+                missingdeps.remove("")
 
             import build
             missingdeps.remove("build")
@@ -89,9 +91,14 @@ class MacOS:
 
             print("dependencies obtained!")
         except ModuleNotFoundError:
-            for missingdep in missingdeps:
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install", missingdep])
+            try:
+                for missingdep in missingdeps:
+                    print()
+                    subprocess.check_call(
+                        [sys.executable, "-m", "pip", "install", missingdep])
+            except Exception as e:
+                print("failed to install dependencies")
+                print(e)
             print("dependencies obtained!")
 
     def system_install(self):
@@ -317,6 +324,7 @@ def install():
 
 
 if __name__ == "__main__":
+    MacOS().get_deps()
     name = "python-sat"
     major = sys.version_info.major
     minor = sys.version_info.minor

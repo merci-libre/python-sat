@@ -27,6 +27,9 @@ def start():
     try:
         from serveradmintool.modules import main
         from serveradmintool.modules import ansi
+    except ModuleNotFoundError:
+        from .modules import main
+        from .modules import ansi
     except ImportError:
         from modules import main
         from modules import ansi

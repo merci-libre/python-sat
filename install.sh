@@ -13,5 +13,5 @@ if [[ $UID == 0 ]];then
   # create the binary
   echo "creating the binary in $bin"
   mkdir -p "$bin"
-  cp -f ./sat/sat.py "$bin"
+  cp -f ./sat/sat.py "$bin"/sat
 fi

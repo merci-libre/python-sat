@@ -113,6 +113,7 @@ def system_install_unix(major: int, minor: int):
     if os.name == "posix" and INSTALLFLAGS.system_install:
         sudo = False
         doas = False
+        command = "sudo"
         if os.path.exists("/sbin/sudo"):
             print("sudo detected...")
             command = "sudo"

@@ -65,22 +65,96 @@ class ReadOneChar:
                 raise ValueError
 
 
-def system_install_unix(major: int, minor: int):
-    """
-    Installs the system packages via the install.sh
-    script provided in the directory.
+class MacOS:
+    def __init__(self):
+        import sys
+        import subprocess
+        try:
+            # assume all are missing...
+            missingdeps = []
+            with open("requirements.txt", 'r') as deps:
+                for line in deps.readlines():
+                    missingdeps.append(line.rstrip())
+                deps.close()
 
-    Only allowed for POSIX based machines at the moment.
-    """
-    print("Starting system install for python-sat ")
-    lib_path = f"/usr/lib/python{major}.{minor}/serveradmintool"
-    bin_path = "/usr/local/bin"
-    # do a system install for linux machines.
-    if os.name == "posix" and INSTALLFLAGS.system_install:
+            import build
+            missingdeps.remove("build")
+
+            import setuptools
+            missingdeps.remove("setuptools")
+            import icmplib
+            missingdeps.remove("icmplib")
+            import requests
+            missingdeps.remove("requests")
+
+            print("dependencies obtained!")
+        except ModuleNotFoundError:
+            for missingdep in missingdeps:
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", missingdep])
+            print("dependencies obtained!")
+
+    def system_install(self):
+        import sys
+        import subprocess
+        subprocess.check_call([sys.executable, "-m", "build"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "."])
+
+
+class Linux:
+    command = ""
+
+    def get_packages(self):
+        # determine package manager
+        try:
+            import icmplib
+            import requests
+        except ImportError:
+            # default package manager
+            package_manager_cmd = ""
+            if os.path.exists("/usr/bin/zypper"):
+                package_manager_cmd = "zypper"
+            if os.path.exists("/usr/bin/apt-get"):
+                package_manager_cmd = "apt-get"
+            if os.path.exists("/usr/bin/pacman"):
+                package_manager_cmd = "pacman"
+            if os.path.exists("/usr/bin/yum"):
+                package_manager_cmd = "yum"
+            if os.path.exists("/usr/bin/dnf"):
+                package_manager_cmd = "dnf"
+            if os.path.exists("/usr/bin/emerge"):
+                package_manager_cmd = "emerge"
+            print("installing system packages...")
+            match package_manager_cmd:
+                case "emerge":
+                    print("Gentoo is not supported (yet)!")
+                    exit(1)
+                case "dnf" | "yum":
+                    print("Generic Linux is not supported!")
+                    exit(1)
+                case "zypper":
+                    print("openSUSE is not supported!")
+                    exit(1)
+                case "pacman":
+                    # refresh repo
+                    os.system(f"{self.command} {package_manager_cmd} -Sy")
+                    # install packages
+                    os.system(
+                        f"{self.command} {package_manager_cmd} -S python-icmplib")
+                    os.system(
+                        f"{self.command} {package_manager_cmd} -S python-requests")
+                case "apt-get":
+                    # refresh repo
+                    os.system(f"{self.command} {package_manager_cmd} update")
+                    # install packages
+                    os.system(
+                        f"{self.command} {package_manager_cmd} install python3-icmplib")
+                    os.system(
+                        f"{self.command} {package_manager_cmd} install python3-requests")
+
+    def which_superuser(self):
         sudo = False
         doas = False
-        # default package manager
-        package_manager_cmd = ""
 
         command = "sudo"
         if os.path.exists("/usr/bin/sudo"):
@@ -110,94 +184,61 @@ def system_install_unix(major: int, minor: int):
                     case 2:
                         command = "doas"
                 break
+        self.command = command
 
-        # determine package manager
-        try:
-            import icmplib
-            import requests
-        except ImportError:
-            if os.path.exists("/usr/bin/zypper"):
-                package_manager_cmd = "zypper"
-            if os.path.exists("/usr/bin/apt-get"):
-                package_manager_cmd = "apt-get"
-            if os.path.exists("/usr/bin/pacman"):
-                package_manager_cmd = "pacman"
-            if os.path.exists("/usr/bin/yum"):
-                package_manager_cmd = "yum"
-            if os.path.exists("/usr/bin/dnf"):
-                package_manager_cmd = "dnf"
-            if os.path.exists("/usr/bin/emerge"):
-                package_manager_cmd = "emerge"
-            print("installing system packages...")
-            match package_manager_cmd:
-                case "emerge":
-                    print("Gentoo is not supported (yet)!")
-                    exit(1)
-                case "dnf" | "yum":
-                    print("Generic Linux is not supported!")
-                    exit(1)
-                case "zypper":
-                    print("openSUSE is not supported!")
-                    exit(1)
-                case "pacman":
-                    # refresh repo
-                    os.system(f"{command} {package_manager_cmd} -Sy")
-                    # install packages
-                    os.system(
-                        f"{command} {package_manager_cmd} -S python-icmplib")
-                    os.system(
-                        f"{command} {package_manager_cmd} -S python-requests")
-                case "apt-get":
-                    # refresh repo
-                    os.system(f"{command} {package_manager_cmd} update")
-                    # install packages
-                    os.system(
-                        f"{command} {package_manager_cmd} install python3-icmplib")
-                    os.system(
-                        f"{command} {package_manager_cmd} install python3-requests")
+    def system_install(self, major: int, minor: int):
+        """
+        Installs the system packages via the install.sh
+        script provided in the directory.
 
-            print(f"Running ./install.sh with {command}")
+        Only allowed for POSIX based machines at the moment.
+        """
+        print("Starting system install for python-sat ")
+        lib_path = f"/usr/lib/python{major}.{minor}/serveradmintool"
+        bin_path = "/usr/local/bin"
+        # do a system install for linux machines.
+        if os.name == "posix" and INSTALLFLAGS.system_install:
+            Linux().which_superuser()
 
-        print(f"installing libraries to {lib_path}")
-        print(f"installing sat to {bin_path}")
-        if os.path.exists(f"{lib_path}"):
-            print(f"{lib_path} already exists!")
-            uninstall = False
-            while True:
-                print("\nsat is already installed on your machine!")
-                print("Would you like to uninstall or reinstall it?")
+            Linux().get_packages()
+            print(f"Running ./install.sh with {self.command}")
 
-                print("\n Files to remove:")
-                print(f"libraries- {lib_path}")
-                print(f"binaries- {bin_path}/sat")
+            print(f"installing libraries to {lib_path}")
+            print(f"installing sat to {bin_path}")
 
-                print("[1] remove")
-                print("[2] reinstall")
-                print("[q]uit\n")
-                try:
-                    sys.stderr.write("choice: \n")
-                    choice = ReadOneChar().choice
-                except ValueError:
-                    continue
-                match choice:
-                    case 1:
-                        uninstall = True
-                    case 2:
-                        uninstall = False
-                break
-            print(f"removing the files...")
-            os.system(f"{command} rm -rv {lib_path}")
-            os.system(f"{command} rm -v {bin_path}/sat")
-            if uninstall:
-                print("\npython-sat was uninstalled!")
-                exit(0)
+            if os.path.exists(f"{lib_path}"):
+                print(f"{lib_path} already exists!")
+                uninstall = False
+                while True:
+                    print("\nsat is already installed on your machine!")
+                    print("Would you like to uninstall or reinstall it?")
 
-        os.system(f"{command} ./install.sh {bin_path} {lib_path}")
+                    print("\n Files to remove:")
+                    print(f"libraries- {lib_path}")
+                    print(f"binaries- {bin_path}/sat")
 
-    if os.name == "nt":
-        print("[ERROR] system installs are only allowed for macos/linux",
-              "at the moment, sorry...")
-        print("however you can use WSL if you'd like :) ")
+                    print("[1] remove")
+                    print("[2] reinstall")
+                    print("[q]uit\n")
+                    try:
+                        sys.stderr.write("choice: \n")
+                        choice = ReadOneChar().choice
+                    except ValueError:
+                        continue
+                    match choice:
+                        case 1:
+                            uninstall = True
+                        case 2:
+                            uninstall = False
+                    break
+                print("removing system files for sat...")
+                os.system(f"{self.command} rm -rv {lib_path}")
+                os.system(f"{self.command} rm -v {bin_path}/sat")
+                if uninstall:
+                    print("\npython-sat was uninstalled!")
+                    exit(0)
+
+            os.system(f"{self.command} ./install.sh {bin_path} {lib_path}")
 
 
 def make_config():
@@ -205,11 +246,12 @@ def make_config():
     although it says linux/windows, it is system agnostic
     """
     POSIX = (os.name == "posix")
+    DARWIN = (sys.platform == "darwin")
     WINDOWS = (os.name == "nt")
     homedir = f"{pathlib.Path.home()}"
     configuration = ""
 
-    if POSIX:
+    if POSIX or DARWIN:
         if INSTALLFLAGS.config_dir == "default":
             configuration = "/.config/server_admin_tool/"
         else:
@@ -233,13 +275,13 @@ def make_config():
 
 
 def install():
-    dependencies = ["icmplib", "requests"]
     """
     installs the program.
     """
-    # get dependencies
+
     print(f"installing sat for {sys.platform} machines")
 
+    # no windows!!!
     if os.name == "nt":
         print("someone did not read the readme...")
         print("Install WSL for windows, and use debian or",
@@ -249,7 +291,11 @@ def install():
         exit(1)
 
     if INSTALLFLAGS.system_install and sys.platform == "linux":
-        system_install_unix(major, minor)
+        Linux().system_install(major, minor)
+
+    # install for macOS
+    if INSTALLFLAGS.system_install and sys.platform == "darwin":
+        MacOS().system_install()
 
     config_dir = make_config()
 

@@ -29,11 +29,8 @@ except ImportError:
     from errors import eprint
 # try importing our external dependencies
 try:
-
     has_dep1 = False
     has_dep2 = False
-    dep1 = "icmplib"
-    dep2 = "requests"
 
     import icmplib
     has_dep1 = True
@@ -50,12 +47,12 @@ except ImportError:
     """
     from . import ansi
     eprint(f"{ansi.YELLOW}[NOTICE]{
-           ansi.END} you are using the built-in dependencies!")
-    eprint(f"{ansi.YELLOW}[NOTICE]{
-           ansi.END} Please read:",
-           "https://github.com/merci-libre/python-sat?tab=readme-ov-file#system-packages")
-    from .external import requests
-    from .external import icmplib
+           ansi.END} install the dependencies please!:")
+    if not has_dep1:
+        print("icmplib")
+    if not has_dep2:
+        print("requests")
+    exit(1)
 
 
 # these are globally accessible throughout the entire program

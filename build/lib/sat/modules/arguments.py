@@ -13,11 +13,11 @@ def parse(prog_name: str):
     parse user arguments from STDIN.
     """
     parser = argparse.ArgumentParser(
-        usage=f'{prog_name} [options] -t[--toml-file] SERVERLIST')
-    parser.add_argument("--print-table", "-s", default=False,
+        usage='{prog_name} [options] [-t [custom_toml_file]]')
+    parser.add_argument("--stderr", "-s", default=False,
                         action="store_true",
                         help='''
-                        output the final table connection to stdout.
+                        Output the final table connection to stderr.
                         ''')
     parser.add_argument("--verbose", "-v",
                         default=False,
@@ -38,7 +38,8 @@ def parse(prog_name: str):
                         nargs="?",
                         type=str,
                         help='''
-                        Toml file to get parsed. If none specified, use default
+                        Custom servers file to get parsed. If none specified,
+                        uses default in configuration directory.
                         ''',
                         default=toml_parser.get_toml_path())
     parser.add_argument("--timeout", "-T", default=4,

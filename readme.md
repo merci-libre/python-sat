@@ -24,6 +24,7 @@ Check the supported Operating Systems here:
 - [Installation](<#Installation>)
   - [Install Script](<#Using-the-provided-installation-script-RECOMMENDED>)
   - [Building from source](<#Building-from-source>)
+  - [Uninstalling](<#Uninstalling>)
 
 **Commands**
 - [Command list](<#list-of-commands>)
@@ -59,7 +60,7 @@ avoid any unforseen issues.
 Installation with pip requires `setuptools`, `build`, and the installation
 of the above dependencies.
 
-These can be downloaded through the system package manager or:
+These can be downloaded through the system package manager or through the install script.
 
 ```sh
 pip install -r requirements.txt
@@ -92,7 +93,7 @@ Then choose one of the following options below.
 - [Install Script](<#Using-the-provided-installation-script-RECOMMENDED>)
 - [Building from source](<#Building-from-source>)
 
-If you are on MacOS: please follow the [building from source section](<#Building-from-source>)
+If you wish to uninstall python-sat, read the [uninstall section](<#uninstalling>).
 
 ## Using the provided installation script (RECOMMENDED)
 First, see if your Operating system is compatible for the install script:
@@ -126,13 +127,21 @@ This guide requires that you install the following dependencies:
 - build `version >= 1.3.0`
 - setuptools `version >= 1.3.0`
 
+install the requirements:
 ```sh
 pip install -r requirements.txt
 ```
 
+Build the wheel file:
 ```sh
+# Make sure you have build and setuptools installed!
 # build the wheel file
 python -m build
+```
+
+install the package with pip
+
+```sh
 # install with pip
 pip install .
 ```
@@ -153,17 +162,26 @@ the system Package Manager, please install the following
 python libraries:
 
 ```
-python-icmplib 
-python-requests
+icmplib 
+requests
+setuptools
+build
 ```
 
 On Debian/Ubuntu:
 ```
-# apt-get install python3-icmplib python3-requests
+# apt-get install python3-icmplib python3-requests python3-build python3-setuptools
 ```
 On Arch Linux:
 ```
-# pacman -S python-icmplib python-requests
+# pacman -S python-icmplib python-requests python-build python-setuptools
+```
+
+# Uninstalling
+To uninstall python sat, simply run the following command:
+
+```sh
+./install.sh --uninstall
 ```
 # Usage
 

@@ -16,7 +16,7 @@ class INSTALLFLAGS:
     # XDG compliant directory
     config_dir = 'default'
     # install to system. (LINUX ONLY)
-    system_install = False
+    system_install = True
 
 
 def create_servers_toml(config_dir: str):
@@ -54,9 +54,9 @@ class ReadOneChar:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         match choice:
             case '1':
-                self.choice = "sudo"
+                self.choice = 1
             case '2':
-                self.choice = "doas"
+                self.choice = 2
             case 'q' | 'Q':
                 exit(0)
             case _:
@@ -104,7 +104,11 @@ def system_install_unix(major: int, minor: int):
                     choice = ReadOneChar().choice
                 except ValueError:
                     continue
-                command = choice
+                match choice:
+                    case 1:
+                        command = "sudo"
+                    case 2:
+                        command = "doas"
                 break
 
         # determine package manager
@@ -158,8 +162,35 @@ def system_install_unix(major: int, minor: int):
         print(f"installing sat to {bin_path}")
         if os.path.exists(f"{lib_path}"):
             print(f"{lib_path} already exists!")
-            print(f"removing the directory...")
-            os.system(f"{command} rm -r {lib_path}")
+            uninstall = False
+            while True:
+                print("\nsat is already installed on your machine!")
+                print("Would you like to uninstall or reinstall it?")
+
+                print("\n Files to remove:")
+                print(f"libraries- {lib_path}")
+                print(f"binaries- {bin_path}/sat")
+
+                print("[1] remove")
+                print("[2] reinstall")
+                print("[q]uit\n")
+                try:
+                    sys.stderr.write("choice: \n")
+                    choice = ReadOneChar().choice
+                except ValueError:
+                    continue
+                match choice:
+                    case 1:
+                        uninstall = True
+                    case 2:
+                        uninstall = False
+                break
+            print(f"removing the files...")
+            os.system(f"{command} rm -rv {lib_path}")
+            os.system(f"{command} rm -v {bin_path}/sat")
+            if uninstall:
+                print("\npython-sat was uninstalled!")
+                exit(0)
 
         os.system(f"{command} ./install.sh {bin_path} {lib_path}")
 
@@ -218,7 +249,7 @@ def install():
         exit(1)
 
     config_dir = make_config()
-    if system_install_unix and sys.platform == "Linux":
+    if INSTALLFLAGS.system_install and sys.platform == "linux":
         system_install_unix(major, minor)
 
     try:

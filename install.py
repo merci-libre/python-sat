@@ -106,19 +106,29 @@ def system_install_unix(major: int, minor: int):
 
     Only allowed for POSIX based machines at the moment.
     """
-    lib_path = f"/usr/lib/python{major}.{
-        minor}/site-packages/serveradmintool"
+    print("Starting system install for python-sat ")
+    lib_path = f"/usr/lib/python{major}.{minor}/serveradmintool"
     bin_path = "/usr/local/bin"
     # do a system install for linux machines.
     if os.name == "posix" and INSTALLFLAGS.system_install:
         sudo = False
         doas = False
+        # figuring out which package manager to use.
+        zypper = False
+        pacman = False
+        dnf = False
+        yum = False
+        apt = False
+        emerge = False
+        # default package manager
+        package_manager_cmd = ""
+
         command = "sudo"
-        if os.path.exists("/sbin/sudo"):
+        if os.path.exists("/usr/bin/sudo"):
             print("sudo detected...")
             command = "sudo"
             sudo = True
-        if os.path.exists("/sbin/doas"):
+        if os.path.exists("/usr/bin/doas"):
             print("doas detected...")
             doas = True
             command = "doas"
@@ -137,6 +147,51 @@ def system_install_unix(major: int, minor: int):
                     continue
                 command = choice
                 break
+
+        # determine package manager
+        try:
+            import icmplib
+            import requests
+        except ImportError:
+            if os.path.exists("/usr/bin/zypper"):
+                package_manager_cmd = "zypper"
+            if os.path.exists("/usr/bin/apt-get"):
+                package_manager_cmd = "apt-get"
+            if os.path.exists("/usr/bin/pacman"):
+                package_manager_cmd = "pacman"
+            if os.path.exists("/usr/bin/yum"):
+                package_manager_cmd = "yum"
+            if os.path.exists("/usr/bin/dnf"):
+                package_manager_cmd = "dnf"
+            if os.path.exists("/usr/bin/emerge"):
+                package_manager_cmd = "emerge"
+            print("installing system packages...")
+            match package_manager_cmd:
+                case "emerge":
+                    print("Gentoo is not supported (yet)!")
+                    exit(1)
+                case "dnf" | "yum":
+                    print("Generic Linux is not supported!")
+                    exit(1)
+                case "zypper":
+                    print("openSUSE is not supported!")
+                    exit(1)
+                case "pacman":
+                    # refresh repo
+                    os.system(f"{command} {package_manager_cmd} -Sy")
+                    # install packages
+                    os.system(
+                        f"{command} {package_manager_cmd} -S python-icmplib")
+                    os.system(
+                        f"{command} {package_manager_cmd} -S python-requests")
+                case "apt-get":
+                    # refresh repo
+                    os.system(f"{command} {package_manager_cmd} update")
+                    # install packages
+                    os.system(
+                        f"{command} {package_manager_cmd} install python3-icmplib")
+                    os.system(
+                        f"{command} {package_manager_cmd} install python3-requests")
 
             print(f"Running ./install.sh with {command}")
 
@@ -157,32 +212,14 @@ def install():
     # get dependencies
     print(f"installing sat for {sys.platform} machines")
 
-    try:
-        import icmplib
-        import requests
-    except ImportError:
-        print("As of python-sat version 1.2,",
-              "you don't need the dependencies,", file=sys.stderr)
-        print("however-- it is highly recommended that you use,"
-              "the your system package manager to install", file=sys.stderr)
-        print("the packages as system packages, or through the venv--",
-              "as the external libraries inside of this repository", file=sys.stderr)
-        print("will not be updated in future versions.", file=sys.stderr)
-
-        print("\n{package_manager_install} python-icmplib python-requests")
-        print("(on debian systems): apt-get install",
-              "python-icmplib python-requests")
-        print("\nIf you are on windows, please follow the build instructions",
-              "in the readme.md installation section titled ## Windows")
-        time.sleep(4)
-
-        if os.name == "nt":
-            print("someone did not read the readme...")
-            print("install WSL for windows, and use linux for python-sat!")
-            print("https://learn.microsoft.com/en-us/windows/wsl/install")
-            print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
-            exit(1)
+    if os.name == "nt":
+        print("someone did not read the readme...")
+        print("install WSL for windows, and use linux for python-sat!")
+        print("https://learn.microsoft.com/en-us/windows/wsl/install")
+        print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
+        exit(1)
     config_dir = make_config()
+    system_install_unix(major, minor)
 
     try:
         os.makedirs(config_dir)
@@ -210,4 +247,3 @@ if __name__ == "__main__":
         print(f"Error: You need python version >= 3.11 to use {
               name}.\n Currently on version {major}.{minor}", file=sys.stderr)
     install()
-    system_install_unix(major, minor)

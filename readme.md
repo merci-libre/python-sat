@@ -106,7 +106,7 @@ First, see if your Operating system is compatible for the install script:
 | Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
 | OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
 | RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
-| MacOS           | (✅)           | Unknown     | (✅)      | (✅)      |
+| MacOS           | (✅)           | (✅)        | (✅)      | (✅)      |
 
 To install `sat`, use the provided `install.py` with:
 

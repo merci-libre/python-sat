@@ -8,7 +8,7 @@ if [[ $UID == 0 ]];then
   echo "creating libraries in $lib"
   # create the libraries 
   mkdir -p "$lib"
-  echo "copying sat/modues to $lib"
+  echo "copying sat/modules to $lib"
   cp -rf ./sat/modules "$lib"
   # create the binary
   echo "creating the binary in $bin"

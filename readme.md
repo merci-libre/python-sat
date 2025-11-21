@@ -7,9 +7,9 @@ Check the supported Operating Systems here:
 
 | OS              | Install script | PIP support | Tested?   | Supported | 
 | --------------- | -------------- | ----------- | --------- | --------- |
-| Debian          | (✅)           | VENV only   | (✅)      | (✅)      |
+| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)      |
 | Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)      |
-| Arch            | (✅)           | VENV only   | (✅)      | (✅)      |
+| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)      |
 | Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
 | OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
 | RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |

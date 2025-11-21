@@ -248,9 +248,10 @@ def install():
         print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
         exit(1)
 
-    config_dir = make_config()
     if INSTALLFLAGS.system_install and sys.platform == "linux":
         system_install_unix(major, minor)
+
+    config_dir = make_config()
 
     try:
         os.makedirs(config_dir)

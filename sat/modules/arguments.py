@@ -13,7 +13,7 @@ def parse(prog_name: str):
     parse user arguments from STDIN.
     """
     parser = argparse.ArgumentParser(
-        usage='{prog_name} [options] [-t [custom_toml_file]]')
+        usage=f'{prog_name} [options] [-t [custom_toml_file]]')
     parser.add_argument("--stderr", "-s", default=False,
                         action="store_true",
                         help='''

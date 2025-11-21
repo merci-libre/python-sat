@@ -9,5 +9,8 @@ requires-python = ">=3.11"
 dependencies = ["requests", "icmplib"]
 version = "1.2"
 
+[project.scripts]
+sat = "sat:start"
+
 [tool.setuptools]
 packages = ["sat", "sat.modules"]

@@ -9,8 +9,4 @@ from .modules import (
     ansi,
     arguments,
 )
-from .modules.external import (
-    icmplib,
-    requests
-)
-from . import sat
+from .sat import start

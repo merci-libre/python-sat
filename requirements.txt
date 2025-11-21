@@ -1,3 +1,5 @@
 requests
 icmplib
+build 
+setuptools 
 

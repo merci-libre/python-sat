@@ -276,7 +276,6 @@ what `sat` interprets the information within `servers.toml`.
 
 **EXAMPLES**
 - `ip_address`: "192.168.0.1" or "https://google.com", or (hostname) in `/etc/hosts`.
-- `hostname`  : "foobar"
 - `ports`: `[443, 22, 21]`
 - `scan`: True
 

@@ -95,7 +95,7 @@ class MacOS:
             print("dependencies obtained!")
 
     def system_install(self):
-        MacOS.get_deps()
+        MacOS().get_deps()
         import sys
         import subprocess
         subprocess.check_call([sys.executable, "-m", "build"])

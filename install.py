@@ -13,11 +13,10 @@ class INSTALLFLAGS:
     Change these if you would like to change
     any of the installation settings.
     """
-
     # XDG compliant directory
     config_dir = 'default'
     # install to system. (LINUX ONLY)
-    system_install = True
+    system_install = False
 
 
 def create_servers_toml(config_dir: str):
@@ -113,13 +112,6 @@ def system_install_unix(major: int, minor: int):
     if os.name == "posix" and INSTALLFLAGS.system_install:
         sudo = False
         doas = False
-        # figuring out which package manager to use.
-        zypper = False
-        pacman = False
-        dnf = False
-        yum = False
-        apt = False
-        emerge = False
         # default package manager
         package_manager_cmd = ""
 
@@ -201,7 +193,9 @@ def system_install_unix(major: int, minor: int):
             print(f"{lib_path} already exists!")
             print(f"removing the directory...")
             os.system(f"{command} rm -r {lib_path}")
+
         os.system(f"{command} ./install.sh {bin_path} {lib_path}")
+
     if os.name == "nt":
         print("[ERROR] system installs are only allowed for macos/linux",
               "at the moment, sorry...")

@@ -37,39 +37,6 @@ def create_servers_toml(config_dir: str):
     print(f"{config_dir}servers.toml was created.")
 
 
-def make_config():
-    """
-    although it says linux/windows, it is system agnostic
-    """
-    LINUX = (os.name == "posix")
-    WINDOWS = (os.name == "nt")
-    homedir = f"{pathlib.Path.home()}"
-    configuration = ""
-
-    if LINUX:
-        if INSTALLFLAGS.config_dir == "default":
-            configuration = "/.config/server_admin_tool/"
-        else:
-            configuration = INSTALLFLAGS.config_dir
-
-    if WINDOWS:
-        # Windows must use WSL for the time being.
-        """
-        if INSTALLFLAGS.config_dir == "default":
-            configuration = f"\\Documents\\server_admin_tool\\"
-        else:
-            configuration = INSTALLFLAGS.config_dir
-        """
-        print("It looks like you did not read the readme.")
-        print("Please use the .")
-
-    if homedir == "" or configuration == "":
-        raise Exception
-    path_to_config = f"{homedir}{configuration}"
-
-    return path_to_config
-
-
 class ReadOneChar:
 
     def __init__(self):
@@ -202,6 +169,38 @@ def system_install_unix(major: int, minor: int):
         print("however you can use WSL if you'd like :) ")
 
 
+def make_config():
+    """
+    although it says linux/windows, it is system agnostic
+    """
+    POSIX = (os.name == "posix")
+    WINDOWS = (os.name == "nt")
+    homedir = f"{pathlib.Path.home()}"
+    configuration = ""
+
+    if POSIX:
+        if INSTALLFLAGS.config_dir == "default":
+            configuration = "/.config/server_admin_tool/"
+        else:
+            configuration = INSTALLFLAGS.config_dir
+
+    if WINDOWS:
+        # Windows must use WSL for the time being.
+        """
+        if INSTALLFLAGS.config_dir == "default":
+            configuration = f"\\Documents\\server_admin_tool\\"
+        else:
+            configuration = INSTALLFLAGS.config_dir
+        """
+        print("It looks like you did not read the readme.")
+
+    if homedir == "" or configuration == "":
+        raise Exception
+    path_to_config = f"{homedir}{configuration}"
+
+    return path_to_config
+
+
 def install():
     dependencies = ["icmplib", "requests"]
     """
@@ -212,10 +211,12 @@ def install():
 
     if os.name == "nt":
         print("someone did not read the readme...")
-        print("install WSL for windows, and use linux for python-sat!")
+        print("Install WSL for windows, and use debian or",
+              "\nubuntu linux for python-sat!")
         print("https://learn.microsoft.com/en-us/windows/wsl/install")
         print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
         exit(1)
+
     config_dir = make_config()
     if system_install_unix and sys.platform == "Linux":
         system_install_unix(major, minor)
@@ -228,8 +229,6 @@ def install():
 
     # change the divider depending on windows or posix
     dirvider = "/"
-    if os.name == "nt":
-        dirvider = "\\"
 
     if os.path.exists(f"{config_dir}{dirvider}servers.toml"):
         print("servers.toml exists!", file=sys.stderr)

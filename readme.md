@@ -22,8 +22,8 @@ Check the supported Operating Systems here:
 - [Description](<#Description>)
 - [Requirements](<#Requirements>)
 - [Installation](<#Installation>)
-  -[Install Script](<#Using-the-provided-installation-script-(RECOMMENDED)>)
-  -[Building from source](<#Building-from-source>)
+  - [Install Script](<#Using-the-provided-installation-script-RECOMMENDED>)
+  - [Building from source](<#Building-from-source>)
 
 **Commands**
 - [Command list](<#list-of-commands>)
@@ -89,8 +89,8 @@ cd python-sat
 
 Then choose one of the following options below.
 
--[Install Script](<#Using-the-provided-installation-script-(RECOMMENDED)>)
--[Building from source](<#Building-from-source>)
+- [Install Script](<#Using-the-provided-installation-script-RECOMMENDED>)
+- [Building from source](<#Building-from-source>)
 
 If you are on MacOS: please follow the [building from source section](<#Building-from-source>)
 

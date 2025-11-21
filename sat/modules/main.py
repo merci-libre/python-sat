@@ -221,7 +221,7 @@ def run(name: str, version: str):
     __join_threads(threads, timeout, args)
 
     if args.verbose:
-        Output.table(args.sterrr, initial=True)
+        Output.table(args.stderr, initial=True)
 
     if args.output_log:
         log.write_log(args.output_log[0])

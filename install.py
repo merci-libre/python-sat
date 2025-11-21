@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import pip
 import time
 import os
 import sys
@@ -55,32 +54,21 @@ def make_config():
             configuration = INSTALLFLAGS.config_dir
 
     if WINDOWS:
+        # Windows must use WSL for the time being.
+        """
         if INSTALLFLAGS.config_dir == "default":
             configuration = f"\\Documents\\server_admin_tool\\"
         else:
             configuration = INSTALLFLAGS.config_dir
+        """
+        print("It looks like you did not read the readme.")
+        print("Please use the .")
 
     if homedir == "" or configuration == "":
         raise Exception
     path_to_config = f"{homedir}{configuration}"
 
     return path_to_config
-
-
-def resolve_dependencies(dependencies: list):
-    pipargs = ["install"]
-    getdeps = False
-    for i in dependencies:
-        pipargs.append(i)
-    try:
-        if pip.main(pipargs) == 0:
-            print("dependencies installed!")
-            getdeps = True
-    except pip._internal.exceptions.ExternallyManagedEnvironment:
-        print("We are in a ExternallyManagedEnvironment, install with venv.")
-    except Exception as e:
-        print(f"Could not resolve dependencies, or pip failed:\n {e}")
-    return getdeps
 
 
 class ReadOneChar:
@@ -188,14 +176,11 @@ def install():
         time.sleep(4)
 
         if os.name == "nt":
-            print("installing dependencies for windows...")
-
-            for i in range(3, 0, -1):
-                print(f"in {i}")
-                time.sleep(1)
-            os.system("python -m build")
-            os.system("pip install .")
-
+            print("someone did not read the readme...")
+            print("install WSL for windows, and use linux for python-sat!")
+            print("https://learn.microsoft.com/en-us/windows/wsl/install")
+            print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
+            exit(1)
     config_dir = make_config()
 
     try:

@@ -13,7 +13,7 @@ Check the supported Operating Systems here:
 | Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
 | OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
 | RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
-| MacOS           | (❌)           | Unknown     | (❌)      | (❌)      |
+| MacOS           | (✅)           | (✅)        | (✅)      | (✅)      |
 | Windows (❌)    | (❌)           | None        | (❌)      | (❌)      |
 
 
@@ -105,7 +105,7 @@ First, see if your Operating system is compatible for the install script:
 | Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
 | OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
 | RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
-| MacOS           | (❌)           | Unknown     | (❌)      | (❌)      |
+| MacOS           | (✅)           | Unknown     | (✅)      | (✅)      |
 
 To install `sat`, use the provided `install.py` with:
 

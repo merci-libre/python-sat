@@ -62,7 +62,8 @@ closed_ports = {}
 
 
 def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
-    log.write("attempting to connect via http...")
+    log.notify(f"attempting to connect via http to {
+               ip_address} on port {port}...")
     rs = False
     try:
         response = requests.get(
@@ -99,7 +100,7 @@ def test_ports(ip_address: str, timeout: int) -> None:
         result = sock.connect_ex((ip_address, port))
         if result == 0 or test_http(ip_address, port, timeout):
             list_open.append(port)
-            log.notify(f"[ports]: connected to {port} on {ip_address}!")
+            log.write(f"[ports]: connected to {port} on {ip_address}!")
             open_ports[ip_address] = list_open
         else:
             log.error(f"[ports]: unable to connect to {

@@ -14,12 +14,9 @@ class UpdateTables():
     def __init__(self, open_ports: {},
                  closed_ports: {},
                  connections: {}):
-        log.notify(f"[From UpdateMaps]: Connections Made: {
-                   self.closed_ports}")
-        log.notify(f"[From UpdateMaps]: Open Port Tables: {
-                   self.open_ports}")
-        log.notify(f"[From UpdateMaps]: Closed Port Tables: {
-                   self.closed_ports}")
+        log.info(f"[From UpdateMaps]: Connections Made: {connections}")
+        log.info(f"[From UpdateMaps]: Open Port Tables: {open_ports}")
+        log.info(f"[From UpdateMaps]: Closed Port Tables: {closed_ports}")
         UpdateTables.open_ports = open_ports
         UpdateTables.closed_ports = closed_ports
         UpdateTables.connections = connections
@@ -123,7 +120,7 @@ def __draw_ip_table_format(ip_address: str,
     __globals.Text.lines_written += 2
 
 
-def __clear_table(stderr: bool):
+def clear_table(stderr: bool):
     """
     Clears the table
     the parameter 'output'
@@ -143,15 +140,19 @@ def __clear_table(stderr: bool):
         __globals.Text.lines_written = 0
 
 
+def get_lines():
+    return __globals.Text.lines_written
+
+
 def draw_table(initial=False, stderr=False):
     """
     This function updates the table with values, and draws the table
-    this value is called in main.py
+    this value is called in main.py returns the count of the lines written.
     """
 
     count = 0
     if not initial:
-        __clear_table(stderr)
+        clear_table(stderr)
 
     # we have to print the top and
     # bottom headers outside of the table.

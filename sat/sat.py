@@ -6,7 +6,7 @@ This file is our initialization file for the entire project.
 """
 name = "sat"
 desc = "Checks accessibility of pre-defined servers"
-__version__ = "1.2"
+__version__ = "1.2.5"
 __author__ = "Jonathan Villanueva (westwardfishdme)"
 
 

@@ -1,4 +1,4 @@
-# Merci Libre's Server Administration Tool (Python-SAT)
+# Python-SAT
 ![intro gif](https://github.com/merci-libre/python-sat/blob/main/blobs/sat.gif)
 
 A CLI server administration tool designed to check server uptimes,

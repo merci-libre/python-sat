@@ -77,7 +77,7 @@ thread the process in such a way that one thread works per machine.
 
 We can examine how this project fundamentally works through the flow chart below: 
 
-![concurrency_model](https://github.com/merci-libre/python-sat/blobs/main/concurrency.svg)
+![concurrency_model](https://github.com/merci-libre/python-sat/blob/main/blobs/concurrency.svg)
 
 Essentially, the whole project relies on the features iterating over a list of threads, and
 on each `rejoin()` we reprint our table displaying the connections to the user.
@@ -138,7 +138,7 @@ out there for that specific type of testing.
 
 To better visualize this, please see the annotated screenshot of a .pcap made in my presentation here:
 
-![pcap](https://github.com/merci-libre/python-sat/blobs/main/pcap.png)
+![pcap](https://github.com/merci-libre/python-sat/blob/main/blobs/pcap.png)
 
 ### Handling Threads
 

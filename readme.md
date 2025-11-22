@@ -8,17 +8,16 @@ maintain a list of connected servers.
 Check the supported Operating Systems here: 
 
 ## List of supported Operating Systems
-| OS              | Install script | PIP install | Tested?   | Supported? | Works? |
-| --------------- | -------------- | ----------- | --------- | ---------- | ------ |
-| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
-| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
-| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
-| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
-| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
-| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
-| MacOS           | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)  |
-| Windows         | (❌)           | None        | (✅)      | (❌)       |  WSL   |
-|                 |                |             |           |            |  only  |
+| OS              | Install script | PIP install | Tested?   | Supported? | Works?      |
+| --------------- | -------------- | ----------- | --------- | ---------- | ----------- |
+| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
+| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
+| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
+| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
+| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
+| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
+| MacOS           | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
+| Windows         | (❌)           | None        | (✅)      | (❌)       |  WSL only   |
 
 
 # Table of Contents

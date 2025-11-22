@@ -324,7 +324,7 @@ complex this language can be, and I'm excited to learn more about software desig
 ## For Students
 
 If you are a student from class who wanted to check my project, I want to thank you for spending the extra time going and
-reading about my project. I hope that it can taught you something that you can use in future classes should you continue
+reading about my project. I hope that it had taught you something that you can use in future classes should you continue
 learning more about programming and software design. I have never worked in a professional environment, but I have spent many
 years learning how to program and learning about computers generally. 
 

@@ -5,16 +5,18 @@ maintain a list of connected servers.
 
 Check the supported Operating Systems here: 
 
-| OS              | Install script | PIP support | Tested?   | Supported | 
-| --------------- | -------------- | ----------- | --------- | --------- |
-| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)      |
-| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)      |
-| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)      |
-| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
-| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
-| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
-| MacOS           | (✅)           | (✅)        | (✅)      | (✅)      |
-| Windows (❌)    | (❌)           | None        | (❌)      | (❌)      |
+## List of supported Operating Systems
+| OS              | Install script | PIP install | Tested?   | Supported? | Works? |
+| --------------- | -------------- | ----------- | --------- | ---------- | ------ |
+| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
+| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
+| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)  |
+| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
+| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
+| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)       |  TBD   |
+| MacOS           | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)  |
+| Windows         | (❌)           | None        | (✅)      | (❌)       |  WSL   |
+|                 |                |             |           |            |  only  |
 
 
 # Table of Contents
@@ -41,6 +43,17 @@ Check the supported Operating Systems here:
 - [Licensing](<#Licensing>)
 - [Reporting Issues](<#Reporting-Issues>)
 
+# Description
+This project was created for my Introduction to Computer Programming at Loyola University 
+(COMP170). Since I had a little bit more programming experience, I wanted to make something
+not just required for the course, but something that I could use outside of the course, and
+continue working on as a developer. 
+
+It does dive into some rather advanced topics not covered in the course, such as concurrency,
+data structures, and design around configuration. If you're interested in reading more about
+the project itself. I created a full introspective documentation on the project inside of the
+[documentation folder](<#documentation/>) for you to read, as well as all the images, presentations,
+alongside information on the project.
 
 # Requirements
 `python-sat` was developed and tested on Arch and Debian Linux on python **version 3.13.7** 
@@ -48,9 +61,9 @@ however, versions >3.11 should be sufficient enough.
 
 **__Windows installations do not work natively__** (as of sat v1.2)
 
-[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/)
-is highly recommended to use this tool, mostly to
-avoid any unforseen issues.
+[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/) is required
+if you wish to run this on windows. In my testing specifically-- I used both Debian and
+Ubuntu for WSL using the install script. 
 
 ## Dependencies
 `python-sat` requires 2 external libraries:
@@ -69,9 +82,10 @@ pip install -r requirements.txt
 
 Due to how the tables are printed with specific UNICODE characters, 
 Windows will not receive direct support for `python-sat` until a later
-version either fixes this, or you fork the repository and fix the tables
-yourself. It is not a priority for me to add functionality for windows, so
-please do not spam this as an issue. 
+version either fixes this, or you fork the repository and fix the text the tables
+uses for yourself. It is not a priority for me to add functionality for windows, so
+please do not spam this as an issue. It might come at a later date-- but again, feel
+free to just change the characters inside of [tables](<#sat/modules/tables.py>)
 
 If you wish to still install `python-sat`,
 please use the [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/install)

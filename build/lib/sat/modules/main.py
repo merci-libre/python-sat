@@ -16,8 +16,6 @@ try:
     from . import tables
     from . import log
     from .errors import eprint
-    # we use eprint on its own, but we want to be more
-    # verbose in this file with error printing.
     from . import errors
     from . import toml_parser
     from . import arguments
@@ -26,18 +24,17 @@ except ImportError:
 
 
 class Output():
-    def log(clear=True, initial=False):
-        log.print_log(clear, initial)
 
-    def table(stderr, initial=True):
-        tables.draw_table(initial,)
+    def table(stderr, verbose=False, initial=True):
+        """
+        Prints the table, if not verbose, this will clear
+        the previous input.
 
-    def on_join(stderr, initial=False, clear=True, verbose=False):
-        tables.draw_table(initial, stderr)
-        if initial:
-            clear = False
-        if verbose:
-            log.print_log(clear, initial)
+        if verbose, we only print the table after the final
+        message.
+        """
+        if not verbose:
+            tables.draw_table(initial, stderr)
 
 
 def __check_values(args, server, ip, ports, scan) -> int:
@@ -77,8 +74,6 @@ def __check_values(args, server, ip, ports, scan) -> int:
         SIGNAL = 2
     except errors.ConnectivityDefinitions.Scan.IncorrectType:
         SIGNAL = 2
-    if args.verbose:
-        Output.log()
     return (SIGNAL, ip, ports, scan)
 
 
@@ -130,8 +125,6 @@ def __create_threads(args, servers: list, timeout: int) -> list:
         except Exception:
             raise errors.Threads.FailedToCreate
 
-    if args.verbose:
-        Output.log()
     return threads
 
 
@@ -149,17 +142,19 @@ def __join_threads(threads: list, timeout: int, args):
     6 for ping, 6 for http, 12s total testing.
     Before killing, 10 seconds to join.
     """
+    log.notify("[Main]: Joining threads...")
+    log.info(f"threads to join: {threads.__len__()}")
 
     timeout = (timeout*2)+10
     for thread in threads:
         thread.join(timeout)
-        Output.on_join(args.stderr, verbose=args.verbose)
-        log.write(f"[Main Thread]: {thread} joined!")
-        log.info(f"[Updated Connections]:{tables.UpdateTables.connections}")
-        # draw table
         tables.UpdateTables(connectivity.open_ports,
                             connectivity.closed_ports,
                             connectivity.connections)
+        log.write(f"[Main Thread]: {thread} joined!")
+        log.info(f"[Updated Connections]:{tables.UpdateTables.connections}")
+        # draw table
+        Output.table(args.stderr, args.verbose, initial=False)
 
 
 def run(name: str, version: str):
@@ -168,12 +163,36 @@ def run(name: str, version: str):
     If an error occurs within here, it returns with a fatal error
     to the program invocation.
     """
-    # initialize our arguments and load variables
+    # initialize our arguments and load arguments
     date = time.asctime()
     log.start(f"{name} ver. {version} on {date}")
     args = arguments.parse(name)
+
+    # exit if these arguments to reduce unnecessary memory usage
+    if args.version:
+        print(f"{name} ver. {version}")
+        exit(0)
+
+    if args.new:
+        if os.path.exists(args.new[0]):
+            eprint(f"{args.new[0]} exists!")
+            exit(1)
+        toml_parser.write_toml(args.new[0])
+        exit(0)
+
     servers_tomlfile = args.toml_file
     timeout = args.timeout
+
+    # if the timeout is shorter than 2 seconds, we exit..
+    if args.timeout < 2 and not args.timeout == 0:
+        eprint("Timeout cannot be shorter than 2 seconds!")
+        exit(1)
+
+    # if the user sets the argument to 0, timeout never.
+    if args.timeout == 0:
+        timeout = 999
+
+    # parse the toml file.
     try:
         servers = toml_parser.parse_toml(servers_tomlfile)
     except errors.TomlFiles.TomlFileMissing:
@@ -183,45 +202,27 @@ def run(name: str, version: str):
         eprint(f"{servers_tomlfile} doesn't look like a toml file...")
         exit(1)
 
-    # set the timeout feature.
-    if args.timeout < 2 and not args.timeout == 0:
-        eprint("Timeout cannot be shorter than 2 seconds!")
-        exit(1)
-
-    # if the user sets the argument to 0, timeout never.
-    if args.timeout == 0:
-        timeout = 999
-
     # add messages to the log, and print the table
-    if args.version:
-        print(f"{name} ver. {version}")
-        exit(0)
-    if args.new:
-        if os.path.exists(args.new[0]):
-            eprint(f"{args.new[0]} exists!")
-            exit(1)
-        toml_parser.write_toml(args.new[0])
-        exit(0)
-    threads: list = __create_threads(args, servers, timeout)
     # get the servers information from the toml file and parse it
+    threads: list = __create_threads(args, servers, timeout)
+    if not args.verbose:
+        Output.table(args.stderr)
+
     log.write(f"TOML {servers_tomlfile} loaded!")
-    Output.on_join(args.stderr, initial=True, verbose=args.verbose)
 
-    # create threads and draw our initial table after threads.
-    del servers_tomlfile, servers
-
-    # start the threads
+    # Start the threads
     for thread in threads:
         log.start(f"{thread}")
         thread.start()
 
-    # handle joining threads
-    log.notify("[main] Joining threads...")
-    log.info(f"threads to join: {threads.__len__()}")
+    # Join the threads.
     __join_threads(threads, timeout, args)
+    log.write("[Completed Scan]")
+
+    del servers_tomlfile, servers
 
     if args.verbose:
-        Output.table(args.sterrr, initial=True)
-
+        log.print_log()
+        Output.table(args.stderr, verbose=False, initial=True)
     if args.output_log:
         log.write_log(args.output_log[0])

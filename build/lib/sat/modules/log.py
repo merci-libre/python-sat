@@ -5,22 +5,19 @@ argument
 """
 
 import datetime
-import sys
+import time
 # system import
 try:
     from . import ansi
-    from .errors import eprint
+    from . import arguments
 except ImportError:
     import ansi
-    from errors import eprint
+    import arguments
 
 
 class __globals:
-    lines_written = 0
-
-
-def __init__():
-    __globals.lines_written += 1
+    # use this as a global
+    args = arguments.parse("sat")
 
 
 class NoColor:
@@ -36,6 +33,14 @@ class Color:
 class logging:
     id = 0
     error_id = 0
+
+
+def verbose_message(message: str):
+    """
+    prints the log in real time.
+    """
+    time.sleep(0.1)
+    print(message)
 
 
 def error(*args):
@@ -64,6 +69,10 @@ def error(*args):
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored
+
+    # verbose
+    if __globals.args.verbose:
+        verbose_message(colored_message)
 
     # write to separate logs.
     log_info = f"[id={logging.id};eid={logging.error_id}::{time}]"
@@ -95,6 +104,10 @@ def start(*args):
     colored_message = f"{log_info}{ansi.BOLD}{
         color}{log_type}{message}{ansi.END}"
 
+    # verbose
+    if __globals.args.verbose:
+        verbose_message(colored_message)
+
     del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
@@ -115,12 +128,16 @@ def notify(*args):
 
     # information
     log_info = f"[id={logging.id}::{time}]"
-    log_type = "[NOTICE]"
+    log_type = "[NOTICE] "
 
     # coloring
     uncolored = f"{log_info}{log_type} {message}"
     colored_message = f"{log_info}{ansi.BOLD}{
         color}{log_type}{message}{ansi.END}"
+
+    # verbose
+    if __globals.args.verbose:
+        verbose_message(colored_message)
 
     del message, time
     # write to logs.
@@ -148,6 +165,10 @@ def info(*args):
     uncolored = f"{log_info}{log_type} {message}"
     colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
 
+    # verbose
+    if __globals.args.verbose:
+        verbose_message(colored_message)
+
     del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
@@ -174,32 +195,22 @@ def write(*args):
     uncolored = f"{log_info}{log_type}{message}"
     colored_message = f"{log_info}{color}{log_type} {message}{ansi.END}"
 
+    # verbose
+    if __globals.args.verbose:
+        verbose_message(colored_message)
+
     del message, time
     # write to logs.
     Color.log[logging.id] = colored_message
     NoColor.log[logging.id] = uncolored
 
 
-def __clear_log():
-    for i in range(__globals.lines_written):
-        sys.stderr.write('\x1b[1A')
-        sys.stderr.write('\x1b[2K')
-
-    __globals.lines_written = 0
-
-
-def print_log(clear=False, initial=False):
-    if clear and not initial:
-        __clear_log()
-    for id in Color.log.keys():
-        eprint(f"{Color.log.get(id)}",)
-        __globals.lines_written += 1
-    # print the errors
-    eprint("\n\nErrors that occurred:")
-    __globals.lines_written += 1
+def print_log():
+    print("\n\nErrors that occurred:\n")
     for (error_id, id) in Color.log_errors.keys():
-        eprint(f"{Color.log_errors.get((error_id, id))}")
-        __globals.lines_written += 1
+        print(f"{Color.log_errors.get((error_id, id))}", flush=True)
+    if __globals.args.verbose:
+        time.sleep(1)
 
 
 def write_log(out_file=""):
@@ -221,13 +232,12 @@ def write_log(out_file=""):
         # write out the main log.
         for id in NoColor.log.keys():
             logfile.write(f"{NoColor.log.get(id)}\n")
-
         logfile.writelines("\n== Errors that occurred ==\n\n")
         # write the errors.
         for (error_id, id) in NoColor.log_errors.keys():
             logfile.write(f"{NoColor.log_errors.get((error_id, id))}\n")
     logfile.close()
-    eprint(f"logfile written to {out_file}.log")
+    print(f"logfile written to {out_file}.log")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
 # Westwardfishdme's Server Administration Tool (sat)
+![intro gif](https://github.com/merci-libre/python-sat/blob/main/blobs/sat.gif)
+
 A CLI server administration tool designed to check server uptimes,
 open ports, and available system services. Allows a user to
 maintain a list of connected servers.

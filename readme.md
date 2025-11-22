@@ -240,8 +240,8 @@ For MacOS, and Linux users:
 `$HOME/.config/server_admin_tool/servers.toml`
 
 On startup, `sat` will search for these files within those directories. 
-If the process cannot find the file, the program will generate an error, 
-and exit.
+If the process cannot find the file, the program will automatically create 
+this file again.
 
 
 ## Server List Formatting
@@ -261,7 +261,7 @@ also to describe how you should add servers in to this file.
 
 ```
 You can either append to this list manually, or use the command line to create
-a new entry.
+a new sample file with `-n`.
 
 ### Valid Key/Value pairs
 As of of this current release version, the table below lists

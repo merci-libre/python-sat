@@ -1,4 +1,4 @@
-# Server Administration Tool
+# Server Administration Tool (python-sat)
 ![intro gif](https://github.com/merci-libre/python-sat/blob/main/blobs/sat.gif)
 
 A CLI server administration tool designed to check server uptimes,

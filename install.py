@@ -57,7 +57,7 @@ def create_servers_toml(config_dir: str):
         toml.write('\n\tscan=true')
         toml.write("\n[servers.localhost2]")
         toml.write('\n\tip="localhost"')
-        toml.write('\n\tport=22')
+        toml.write('\n\tports=22')
         toml.write('\n\tscan=false')
         toml.write("\n[servers.google_dns]")
         toml.write('\n\tip="8.8.8.8"')

@@ -61,6 +61,10 @@ def __draw_ip_table_format(ip_address: str,
     closed_ports = UpdateTables.closed_ports.get(ip_address)
     responsive = UpdateTables.connections.get(ip_address)[0]
 
+    # fix ip address length
+    if ip_address.__len__() > __globals.Text.max_ip_length:
+        ip_address = f"{ip_address[:(__globals.Text.max_ip_length-3)]}..."
+
     match count:
         # top
         case 0:

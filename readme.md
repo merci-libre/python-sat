@@ -111,6 +111,10 @@ Then choose one of the following options below.
 If you wish to uninstall python-sat, read the [uninstall section](<#uninstalling>).
 
 ## Using the provided installation script (RECOMMENDED)
+The install script works extremely well on Linux-based systems. However, if
+you are interested in using a virtualized environment, I suggest you follow
+the guide for [building from source](<#Building-from-source>).
+
 First, see if your Operating system is compatible for the install script:
 
 | OS              | Install script | PIP support | Tested?   | Supported |
@@ -123,6 +127,7 @@ First, see if your Operating system is compatible for the install script:
 | RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
 | MacOS           | (✅)           | (✅)        | (✅)      | (✅)      |
 
+
 To install `sat`, use the provided `install.py` with:
 
 This should create both the configuration files, and attempt
@@ -133,6 +138,7 @@ dependencies fails, it will create the directories regardless;
 python install.py
 ```
 
+
 ## Building from source 
 
 You can also use the provided `pyproject.toml` build file to build the project with pip:
@@ -142,24 +148,31 @@ This guide requires that you install the following dependencies:
 - build `version >= 1.3.0`
 - setuptools `version >= 1.3.0`
 
-install the requirements:
+You can also use this guide to build within a virtual environment.
+
+1. Install the requirements:
 ```sh
 pip install -r requirements.txt
 ```
 
-Build the wheel file:
+(if you are on linux, please see [this section on System Packages](<#System-Packages>))
+
+2. Build the wheel file:
 ```sh
 # Make sure you have build and setuptools installed!
 # build the wheel file
 python -m build
 ```
 
-install the package with pip
+3. Install the package with `pip`
 
 ```sh
 # install with pip
 pip install .
 ```
+
+## pipx
+You can also use `pipx` to install the project.
 
 # Dependencies using system packages.
 

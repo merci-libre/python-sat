@@ -2,15 +2,27 @@
 requires = ["setuptools"]
 
 [project]
+authors = [
+  { name = "finch/westwardfishdme", email = "jvillanueva7@luc.edu" },
+  { name = "developer email:", email = "westwardfishdme@gmail.com" },
+]
 name = "serveradmintool"
-authors = [{ name = "westwardfishdme", email = "westwardfishdme@gmail.com" }]
 readme = "readme.md"
 requires-python = ">=3.11"
 dependencies = ["requests", "icmplib"]
-version = "1.2.5"
+version = "1.3"
 
 [project.scripts]
 sat = "sat:start"
 
 [tool.setuptools]
-packages = ["sat", "sat.modules"]
+packages = [
+  "sat",
+  "sat.modules",
+  "sat.modules.ansi",
+  "sat.modules.connectivity",
+  "sat.modules.errors",
+  "sat.modules.log",
+  "sat.modules.toml",
+  "sat.modules.tables",
+]

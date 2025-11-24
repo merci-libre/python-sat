@@ -13,9 +13,9 @@ Check the supported Operating Systems here:
 | Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
 | Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
 | Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
-| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
-| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
-| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)       |  TBD        |
+| Gentoo          | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
+| OpenSUSE        | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
+| RHEL-based      | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
 | MacOS           | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
 | Windows         | (❌)           | None        | (✅)      | (❌)       |  WSL only   |
 
@@ -24,7 +24,9 @@ Check the supported Operating Systems here:
 **About**
 - [Description](<#Description>)
 - [Requirements](<#Requirements>)
-- [Installation](<#Installation>)
+
+
+**[Installation](<#Installation>)**
   - [Install Script](<#Using-the-provided-installation-script-RECOMMENDED>)
   - [Building from source](<#Building-from-source>)
   - [Uninstalling](<#Uninstalling>)
@@ -119,12 +121,12 @@ First, see if your Operating system is compatible for the install script:
 
 | OS              | Install script | PIP support | Tested?   | Supported |
 | --------------- | -------------- | ----------- | --------- | --------- |
-| Debian          | (✅)           | VENV only   | (✅)      | (✅)      |
-| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)      |
-| Arch            | (✅)           | VENV only   | (✅)      | (✅)      |
-| Gentoo          | (❌)           | VENV only   | (❌)      | (❌)      |
-| OpenSUSE        | (❌)           | VENV only   | (❌)      | (❌)      |
-| RHEL-based      | (❌)           | VENV only   | (❌)      | (❌)      |
+| Debian          | (✅)           | (✅)        | (✅)      | (✅)      |
+| Ubuntu          | (✅)           | (✅)        | (✅)      | (✅)      |
+| Arch            | (✅)           | (✅)        | (✅)      | (✅)      |
+| Gentoo          | (❌)           | (✅)        | (❌)      | (✅)      |
+| OpenSUSE        | (❌)           | (✅)        | (❌)      | (✅)      |
+| RHEL-based      | (❌)           | (✅)        | (❌)      | (✅)      |
 | MacOS           | (✅)           | (✅)        | (✅)      | (✅)      |
 
 

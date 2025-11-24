@@ -4,7 +4,7 @@ from .modules import (
     connectivity,
     log,
     errors,
-    toml_parser,
+    toml,
     tables,
     ansi,
     arguments,

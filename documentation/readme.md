@@ -100,7 +100,7 @@ what exactly is happening.
 
 See the source code:
 
-- [connectivity.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/connectivity.py)
+- [connectivity.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/connectivity/__init__.py)
 
 Network connections was probably the most interesting feature for me to implement in this project.
 Mostly because I have never have had to go as far as making raw socket connections in any of my other
@@ -166,12 +166,12 @@ Of which, the latter is the easiest to implement.
 
 See the source code:
 
-- [tables.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/tables.py)
+- [tables.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/tables/__init__.py)
 
 All features dealing with the tables will be ascribed to the 
-[tables.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/tables.py)
+[tables.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/tables/__init__.py)
 library. The way this works is by iterating over a dictionary, and writing the results from
-[connectivity.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/connectivity.py)
+[connectivity.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/connectivity/__init__.py)
 to the table. 
 
 However, this introduces an interesting problem: Everytime we finish a task through a `rejoin()` we have
@@ -193,7 +193,7 @@ the table if the user wants to scan for an absurd amount of ports.
 
 See the source code:
 
-- [log.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/log.py)
+- [log.py](https://github.com/merci-libre/python-sat/blob/main/sat/modules/log/__init__.py)
 
 This one was by far the feature I was most proud of implementing. The logging library
 was one of the most useful things that I could have implemented in this entire project.

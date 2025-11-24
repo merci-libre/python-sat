@@ -9,7 +9,7 @@ import argparse
 # build information
 
 class BUILDINFO:
-    version = "1.2.5"
+    version = "1.3"
     name = "sat"
 
 # installation flags.
@@ -24,7 +24,8 @@ class INSTALLFLAGS:
     # XDG compliant directory
     config_dir = 'default'
     # install to system.
-    system_install = True
+    system_install: bool
+    force_reinstall: bool
 
 
 def parse_args():
@@ -33,17 +34,24 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(
         usage='install.py [OPTIONS]')
+    parser.add_argument("--force-reinstall", "-F",
+                        default=False,
+                        action="store_true",
+                        help='''
+                        Force re-build and re-install python-sat.
+                        ''')
     parser.add_argument("--uninstall", "-u",
                         default=False,
                         action="store_true",
                         help='''
                         Uninstall python-sat
                         ''')
-    parser.add_argument("--system-install", "-i",
-                        default=True,
+    parser.add_argument("--update",
+                        default=False,
                         action="store_true",
                         help='''
-                        perform a system-install.
+                        Updates the package to the latest git version.
+                        REQUIRES `git` to be installed!
                         ''')
     return parser.parse_args()
 
@@ -144,8 +152,8 @@ class MacOS:
 
 
 class Linux():
-    lib_path = ""
-    bin_path = ""
+    old_lib_path = ""
+    old_bin_path = ""
     major = 0
     minor = 0
     command = "sudo"
@@ -153,15 +161,14 @@ class Linux():
     def __init__(self, major=None, minor=None):
         self.major = major
         self.minor = minor
-        self.lib_path = f"/usr/lib/python{
-            self.major}.{self.minor}/serveradmintool"
-        self.bin_path = "/usr/local/bin"
 
-    def get_packages(self):
+    def get_packages(self, command):
         # determine package manager
         try:
             import icmplib
             import requests
+            import build
+            import setuptools
         except ImportError:
             # default package manager
             package_manager_cmd = ""
@@ -190,14 +197,20 @@ class Linux():
                     print("openSUSE is not supported!")
                     exit(1)
                 case "pacman":
-                    # refresh repo
+                    # sync repositories
                     subprocess.check_call(
                         [self.command, package_manager_cmd, "-Sy"])
                     # install packages
                     subprocess.check_call(
-                        [self.command, package_manager_cmd, "-S", "python-icmplib", "python-requests"])
+                        [self.command,
+                         package_manager_cmd,
+                         "-S",
+                         "python-build",
+                         "python-setuptools",
+                         "python-icmplib",
+                         "python-requests"])
                 case "apt-get":
-                    # refresh repo
+                    # sync repositories
                     subprocess.check_call(
                         [self.command, package_manager_cmd, "update"])
                     # install packages
@@ -205,12 +218,10 @@ class Linux():
                         [self.command,
                          package_manager_cmd,
                          "install",
-                         "python3-icmplib"])
-                    subprocess.check_call(
-                        [self.command,
-                         package_manager_cmd,
-                         "install",
-                         "python3-requests"])
+                         "python3-icmplib",
+                         "python3-requests",
+                         "python3-setuptools",
+                         "python3-build"])
 
     def which_superuser(self):
         """
@@ -249,14 +260,14 @@ class Linux():
         sys.stderr.write(f"choice: {command} \n")
         return command
 
-    def system_uninstall(self, command):
+    def old_system_uninstall(self, command):
         lib_removed = False
         bins_removed = False
 
-        if not os.path.exists(self.lib_path):
+        if not os.path.exists(self.old_lib_path):
             lib_removed = True
             print("libraries are already uninstalled!")
-        if not os.path.exists(f"{self.bin_path}/sat"):
+        if not os.path.exists(f"{self.old_bin_path}/sat"):
             bins_removed = True
             print("binaries are uninstalled!")
         # handle uninstall
@@ -266,21 +277,51 @@ class Linux():
                 pass
             case (True, False):
                 # libs still exist.
-                print(f"running {command} rm -rv {self.lib_path}...")
+                print(f"running {command} rm -rv {self.old_lib_path}...")
                 subprocess.check_call(
-                    [command, "rm", "-rv", f"{self.lib_path}"])
+                    [command, "rm", "-rv", f"{self.old_lib_path}"])
             case (False, True):
                 # bins still exist.
-                print(f"running {command} rm -v {self.bin_path}/sat...")
+                print(f"running {command} rm -v {self.old_bin_path}/sat...")
                 subprocess.check_call(
-                    [command, "rm", "-v", f"{self.bin_path}/sat"])
+                    [command, "rm", "-v", f"{self.old_bin_path}/sat"])
             case (False, False):
-                print(f"running {command} rm -v {self.bin_path}/sat...")
+                print(f"running {command} rm -v {self.old_bin_path}/sat...")
                 subprocess.check_call(
-                    [command, "rm", "-v", f"{self.bin_path}/sat"])
-                print(f"running {command} rm -rv {self.lib_path}...")
+                    [command, "rm", "-v", f"{self.old_bin_path}/sat"])
+                print(f"running {command} rm -rv {self.old_lib_path}...")
                 subprocess.check_call(
-                    [command, "rm", "-rv", f"{self.lib_path}"])
+                    [command, "rm", "-rv", f"{self.old_lib_path}"])
+
+    def full_install(self, command):
+        """
+        performs a full system install.
+        """
+        print("building the packages...")
+        try:
+            subprocess.check_call([sys.executable, "-m", "build"])
+            subprocess.check_call(
+                [command,
+                 sys.executable,
+                 "-m",
+                 "pip",
+                 "install",
+                 "--root-user-action",
+                 "ignore",
+                 "--break-system-packages",
+                 "."])
+        except subprocess.SubprocessError:
+            raise Exception("Failed to install packages from install.")
+
+    def system_uninstall(self, command):
+        subprocess.check_call(
+            [command, sys.executable, "-m",
+             "pip",
+             "uninstall",
+             "--root-user-action",
+             "ignore",
+             "--break-system-packages",
+             "serveradmintool"])
 
     def system_install(self):
         """
@@ -289,53 +330,53 @@ class Linux():
 
         Only allowed for POSIX based machines at the moment.
         """
+
+        self.old_lib_path = f"/usr/lib/python{self.major}.{
+            self.minor}/site-packages/serveradmintool"
+        self.old_bin_path = "/usr/local/bin"
+
+        old_install = (os.path.exists(self.old_lib_path) or os.path.exists(
+            f"{self.old_bin_path}/sat"))
+
         print("Starting system install for python-sat ")
         # do a system install for linux machines.
         if os.name == "posix" and INSTALLFLAGS.system_install:
             self.command = Linux(self.major, self.minor).which_superuser()
-            Linux(self.major, self.minor).get_packages()
+            Linux(self.major, self.minor).get_packages(self.command)
 
-            print(f"installing libraries to {self.lib_path}")
-            print(f"installing sat to {self.bin_path}")
+            # remove old installation method, we use pip now.
+            print(f"checking if {self.old_lib_path} exists...")
 
-            print(f"checking if {self.lib_path} exists...")
-            if os.path.exists(self.lib_path):
-                print(f"{self.lib_path} already exists!")
-                uninstall = False
-                while True:
-                    print("\nsat is already installed on your machine!")
-                    print("Would you like to uninstall or reinstall it?")
+            if old_install:
+                print(f"{self.old_lib_path} exists!")
+                print("As of python-sat 1.3",
+                      "system installs use pip to install the package")
 
-                    print("\n Files to remove:")
-                    print(f"libraries- {self.lib_path}")
-                    print(f"binaries- {self.bin_path}/sat")
+                print("\n Files to remove:")
+                print(f"libraries= {self.old_lib_path}")
+                print(f"binaries= {self.old_bin_path}/sat")
 
-                    print("[1] remove")
-                    print("[2] reinstall")
-                    print("[q]uit\n")
-                    try:
-                        choice = ReadOneChar().choice
-                    except ValueError:
-                        continue
-                    match choice:
-                        case 1:
-                            choice = "remove"
-                            uninstall = True
-                        case 2:
-                            choice = "reinstall"
-                            uninstall = False
-                    break
+                self.old_system_uninstall(self.command)
 
-                sys.stderr.write(f"choice: {choice} \n")
-                self.system_uninstall(self.command)
-                if uninstall:
-                    print("\npython-sat was uninstalled!")
-                    exit(0)
+        try:
 
-            print(
-                f"running {self.command} ./install.sh {self.bin_path} {self.lib_path}")
+            print("checking if python-sat already exists...\n")
             subprocess.check_call(
-                [self.command, "./install.sh", self.bin_path, self.lib_path])
+                [sys.executable, "-m", "pip", "show", "serveradmintool", ">", "/dev/null"])
+            # force reinstall
+            if INSTALLFLAGS.force_reinstall:
+                Linux().full_install(self.command)
+                exit(0)
+
+            print("\npython-sat was already installed!",
+                  "(pip show serveradmintool)")
+            print("To force rebuild and reinstall, run this again with -F")
+            print("To uninstall, run this again with the --uninstall argument")
+            exit(1)
+        except subprocess.SubprocessError:
+            # catches if pip show fails.
+            print("building the packages...")
+            Linux().full_install(self.command)
 
 
 def make_config():
@@ -414,7 +455,8 @@ if __name__ == "__main__":
     major = sys.version_info.major
     minor = sys.version_info.minor
     args = parse_args()
-    INSTALLFLAGS.system_install = args.system_install
+    INSTALLFLAGS.system_install = not args.uninstall
+    INSTALLFLAGS.force_reinstall = args.force_reinstall
 
     if major < 3 and minor < 11:
         print(f"Error: You need python version >= 3.11 to use {
@@ -428,6 +470,8 @@ if __name__ == "__main__":
                 MacOS().system_uninstall()
             if sys.platform == "linux":
                 command = Linux(major, minor).which_superuser()
+                print(f"uninstalling with {command} {
+                      sys.executable} -m pip...")
                 Linux(major, minor).system_uninstall(command)
         except Exception as e:
             print("Error failed to uninstall sat.", file=sys.stderr)

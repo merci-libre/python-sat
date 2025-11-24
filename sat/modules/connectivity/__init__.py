@@ -164,7 +164,7 @@ def ping(ip_address: str, main_timeout: int, max_packets_sent=5) -> bool:
 
     # we subtact 1 from max_packets_sent to account for the 0 offset for
     # iterables.
-    dropped = f"{(1.0-packets_received/max_packets_sent-1)*100:.2f}%"
+    dropped = f"{(1.0-(packets_received/(max_packets_sent-1)))*100:.2f}%"
 
     log.notify(f"Pinged {ip_address} with {packets_sent}...")
 

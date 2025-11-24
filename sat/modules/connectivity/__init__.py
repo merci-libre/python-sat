@@ -20,13 +20,13 @@ also creates and stores the hashmap dictionaries for the program:
 """
 import socket
 try:
-    from . import log
-    from .errors import eprint
-    from . import errors
-except ImportError:
     import log
-    import errors
     from errors import eprint
+    import errors
+except ModuleNotFoundError:
+    import sat.modules.log as log
+    from sat.modules.errors import eprint
+    import sat.modules.errors as errors
 # try importing our external dependencies
 try:
     has_dep1 = False

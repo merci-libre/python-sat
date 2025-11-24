@@ -1,20 +1,3 @@
-import os
-import pathlib
-try:
-    from . import errors
-    from . import ansi
-except ImportError:
-    import ansi
-    import errors
-try:
-    import tomllib
-except ImportError:
-    errors.eprint(
-        f"{ansi.RED} [ ERROR ]: SAT requires python version >= 3.11.{
-            ansi.END}",
-        "\nExited with code 1")
-    exit(1)
-
 """
 This module is required to parse user's server.toml files
 By default, it searches through the user's defined configuration folder.
@@ -33,6 +16,23 @@ the format of the file matches that of the one designated in the official
 documentation. In addition, you can also invoke the -N option to create a
 preformatted .toml file that you can manually edit.
 """
+
+import os
+import pathlib
+try:
+    import errors
+    import ansi
+except ModuleNotFoundError:
+    import sat.modules.ansi as ansi
+    import sat.modules.errors as errors
+try:
+    import tomllib
+except ImportError:
+    errors.eprint(
+        f"{ansi.RED} [ ERROR ]: SAT requires python version >= 3.11.{
+            ansi.END}",
+        "\nExited with code 1")
+    exit(1)
 
 
 def get_toml_path() -> str:

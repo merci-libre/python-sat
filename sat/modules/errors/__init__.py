@@ -1,10 +1,14 @@
+"""
+This module is responsible for creating customized
+errors within python-sat.
+"""
 import sys
 from threading import Thread
 import traceback
 try:
-    from . import ansi
-except ImportError:
     import ansi
+except ModuleNotFoundError:
+    import sat.modules.ansi as ansi
 
 
 def eprint(*args, **kwargs):
@@ -96,12 +100,11 @@ class Main(Exception):
     class ImportError(Exception):
 
         def __str__(self):
-            return f"{self.thread}: {self.message}\n{ansi.RED}{self.traceback}{ansi.END}\n{traceback}"
+            return f"FATAL: {self.message}\n{ansi.RED}{self.traceback}{ansi.END}\n{self.traceback}"
 
-        def __init__(self, thread: Thread,
+        def __init__(self,
                      message="Failed to import the libraries within main...",
                      code=1):
-            self.thread = thread
             self.message = message
             self.code = code
             self.traceback = traceback.format_exc()

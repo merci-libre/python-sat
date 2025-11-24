@@ -8,11 +8,11 @@ import datetime
 import time
 # system import
 try:
-    from . import ansi
-    from . import arguments
-except ImportError:
     import ansi
     import arguments
+except ModuleNotFoundError:
+    import sat.modules.ansi as ansi
+    import sat.modules.arguments as arguments
 
 
 class __globals:

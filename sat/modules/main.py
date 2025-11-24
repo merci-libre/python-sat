@@ -17,7 +17,7 @@ try:
     from . import log
     from .errors import eprint
     from . import errors
-    from . import toml_parser
+    from . import toml
     from . import arguments
 except ImportError:
     raise errors.Main.ImportError
@@ -177,7 +177,7 @@ def run(name: str, version: str):
         if os.path.exists(args.new[0]):
             eprint(f"{args.new[0]} exists!")
             exit(1)
-        toml_parser.write_toml(args.new[0])
+        toml.write_toml(args.new[0])
         exit(0)
 
     servers_tomlfile = args.toml_file
@@ -194,7 +194,7 @@ def run(name: str, version: str):
 
     # parse the toml file.
     try:
-        servers = toml_parser.parse_toml(servers_tomlfile)
+        servers = toml.parse_toml(servers_tomlfile)
     except errors.TomlFiles.TomlFileMissing:
         eprint(f"{servers_tomlfile} does not exist!")
         exit(1)

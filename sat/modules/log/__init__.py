@@ -241,10 +241,12 @@ def write_log(out_file=""):
 
 
 if __name__ == "__main__":
+    __globals.args.verbose = True
     write("hello", "world", "no")
-    notify("[THIS IS A NOTIFICATION]", '\n\tdo something')
+    notify("[THIS IS A NOTIFICATION]", 'do something')
     error("this", "\nis an ", "error")
     write("hello", "world", "no")
-    notify("[THIS IS A NOTIFICATION]", '\n\tdo something')
-    error("this", "\nis an ", "error")
+    notify("[THIS IS A NOTIFICATION]", 'do something')
+    error("this", "is an ", "error")
+
     print_log()

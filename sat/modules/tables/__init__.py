@@ -35,8 +35,8 @@ class __globals:
         icmp_message = "ICMP PING?"
         open_ports = "open ports"
         closed_ports = "closed ports"
-        table_header = f" {ip_address}      {
-            icmp_message}        {ansi.GREEN}[{open_ports}] ::  {ansi.RED}[{closed_ports}]{ansi.END}"
+        table_header = f" {ip_address}      {icmp_message}        {
+            ansi.GREEN}[{open_ports}] :: {ansi.RED}[{closed_ports}]{ansi.END}"
         # for calculations
         max_ip_length = "000.000.000.000".__len__()
         max_con_length = "awaiting...".__len__()-1

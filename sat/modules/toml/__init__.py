@@ -63,29 +63,37 @@ def get_toml_path() -> str:
     return path_to_config
 
 
-# not implemented yet
 def write_toml(filename: str, server_count=5):
     """
     Used to create a custom list that the user can
-    edit and define.
+    edit and define. Overwrites the file if it is
+    existing.
     """
-    # argument parsing
+    # removes a pre-emptive toml from the name, as
+    # we already add this when writing.
     if filename.__contains__(".toml"):
         filename = filename.replace(".toml", "")
 
-    # actual writing
     with open(f"{filename}.toml", 'w') as toml:
         try:
             # top header
             toml.write("[servers]\n")
+            # gives the user an example
+            toml.write('\n# [server.{your_name_here}]\n')
+            toml.write('\n# ip = "hostname/url/ip address": type=string\n')
+            toml.write('\n# ports = [22,8080,443] : accepts list types\n')
+            toml.write('\n# scan = type=boolean values (true or false)\n')
+
+            toml.write('\n# for more details, please consult the',
+                       'readme for more information.\n')
             for i in range(server_count):
                 toml.write("\n[servers.{server_name}]")
                 toml.write(
-                    '\n\tip = # enter an IP address here, type="string"')
+                    '\n\tip = ""')
                 toml.write(
-                    '\n\tports = # enter a list i.e: [22, 1337, 65535]'
+                    '\n\tports = []'
                 )
-                toml.write('\n\tscan= # enter a boolean value here')
+                toml.write('\n\tscan=false')
                 toml.write('\n')
         except FileExistsError:
             errors.eprint(f"{filename} already exists!")

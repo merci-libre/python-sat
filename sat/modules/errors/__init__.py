@@ -11,11 +11,11 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
-# class methods
 class Check():
     """
     Used in the __create_threads function to check the values of the data.
-    Also maybe used in externally to validate the values of parsed toml data
+    Also maybe used in externally to validate the values of parsed toml data.
+    Moved here to reduce lines in main.
     """
 
     def scan(self, scan, server_id):
@@ -83,20 +83,6 @@ class Check():
             case _:
                 raise ip_errors.IncorrectType(server_id)
         return ip
-
-
-class ParseValues():
-    """
-    Checks arguments to see if they are of a
-    specific data type
-
-    """
-
-    def __init__(self, *args, comparison_to: type):
-        for arg in args:
-            match arg:
-                case str():
-                    pass
 
 
 class Main(Exception):

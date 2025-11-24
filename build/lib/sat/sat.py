@@ -1,12 +1,12 @@
-#!/usr/bin/env python3.13
+#!/usr/bin/env python3
 import sys
-import traceback
 """
 This file is our initialization file for the entire project.
 """
+import traceback
 name = "sat"
 desc = "Checks accessibility of pre-defined servers"
-__version__ = "1.2.5"
+__version__ = "1.3"
 __author__ = "Jonathan Villanueva (westwardfishdme)"
 
 

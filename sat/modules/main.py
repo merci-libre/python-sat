@@ -21,6 +21,9 @@ try:
     from . import arguments
 except ImportError:
     raise errors.Main.ImportError
+except Exception as e:
+    print(e)
+    raise errors.Main.ImportError
 
 
 class Output():

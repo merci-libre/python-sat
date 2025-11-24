@@ -1,8 +1,8 @@
 import argparse
 try:
-    from . import toml_parser
-except ImportError:
-    import toml_parser
+    from . import toml
+except ModuleNotFoundError:
+    import toml
 
 
 # NOT YET IMPLEMENTED
@@ -41,7 +41,7 @@ def parse(prog_name: str):
                         Custom servers file to get parsed. If none specified,
                         uses default in configuration directory.
                         ''',
-                        default=toml_parser.get_toml_path())
+                        default=toml.get_toml_path())
     parser.add_argument("--timeout", "-T", default=4,
                         nargs="?",
                         type=int,

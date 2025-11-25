@@ -19,6 +19,7 @@ also creates and stores the hashmap dictionaries for the program:
 ```
 """
 import socket
+import threading
 try:
     import log
     from errors import eprint
@@ -105,30 +106,26 @@ def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
     return http_response
 
 
-def test_ports(ip_address: str, timeout: int) -> None:
+def test_ports(ip_address: str, port: int, timeout: int) -> None:
     """
     Test port connectivity, and appends them to a dictionary
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    port_list = connections.get(ip_address)[1]
-    list_open = []
-    list_closed = []
+    list_open = open_ports.get(ip_address)
+    list_closed = closed_ports.get(ip_address)
+    result = sock.connect_ex((ip_address, port))
 
-    for port in port_list:
-        result = sock.connect_ex((ip_address, port))
+    if result == 0 or test_http(ip_address, port, timeout):
+        log.write(f"[ports]: connected to {port} on {ip_address}!")
+        list_open.append(port)
 
-        if result == 0 or test_http(ip_address, port, timeout):
-            list_open.append(port)
-            log.write(f"[ports]: connected to {port} on {ip_address}!")
-            open_ports[ip_address] = list_open
+    else:
+        log.error(f"[ports]: unable to connect to {port} on {ip_address}...")
+        list_closed.append(port)
+    sock.close()
 
-        else:
-            log.error(f"[ports]: unable to connect to {
-                port} on {ip_address}...")
-            list_closed.append(port)
-            closed_ports[ip_address] = list_closed
-
-        sock.close()
+    open_ports[ip_address] = list_open
+    closed_ports[ip_address] = list_closed
 
 
 def ping(ip_address: str, main_timeout: int, max_packets_sent=5) -> bool:
@@ -212,11 +209,32 @@ def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
     try:
         # we don't need to scan the ports if neither value.
         if ports is not None and scan:
+            port_list = connections.get(ip_address)[1]
+            list_open = []
+            list_closed = []
+
+            open_ports[ip_address] = list_open
+            closed_ports[ip_address] = list_closed
             log.notify(f"checking port status on {
                        ip_address} on ports: {ports}")
-            test_ports(ip_address, timeout)
+            # create subthreads for port scanning
+            threads = []
+            for port in port_list:
+                t = threading.Thread(
+                    target=test_ports(
+                        ip_address, port, timeout),
+                )
+                t.daemon = True
+                threads.append(t)
 
-        return  # stop the thread
+            # start the subthreads
+            for thread in threads:
+                thread.start()
+                thread.join(timeout)
+            log.notify(f"open_ports: {open_ports}")
+            log.notify(f"closed_ports: {closed_ports}")
+
+        return  # stop and rejoin the main thread.
 
     except Exception as e:
         log.error(e)

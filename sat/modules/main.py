@@ -148,7 +148,7 @@ def __join_threads(threads: list, timeout: int, args):
     log.notify("[Main]: Joining threads...")
     log.info(f"threads to join: {threads.__len__()}")
 
-    timeout = (timeout*2)+10
+    timeout += 1
     for thread in threads:
         thread.join(timeout)
         tables.UpdateTables(connectivity.open_ports,
@@ -187,13 +187,13 @@ def run(name: str, version: str):
     timeout = args.timeout
 
     # if the timeout is shorter than 2 seconds, we exit..
-    if args.timeout < 2 and not args.timeout == 0:
-        eprint("Timeout cannot be shorter than 2 seconds!")
+    if args.timeout < 0:
+        eprint("Timeout cannot be shorter than 0 seconds!")
         exit(1)
 
     # if the user sets the argument to 0, timeout never.
     if args.timeout == 0:
-        timeout = 999
+        timeout = 1
 
     # parse the toml file.
     try:

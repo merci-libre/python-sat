@@ -362,7 +362,8 @@ class Linux():
 
             print("checking if python-sat already exists...\n")
             subprocess.check_call(
-                [sys.executable, "-m", "pip", "show", "serveradmintool"], stdout="/dev/null")
+                [sys.executable, "-m", "pip", "show", "serveradmintool"],
+                stdout=sys.path("/dev/null"))
             # force reinstall
             if INSTALLFLAGS.force_reinstall:
                 Linux().full_install(self.command)

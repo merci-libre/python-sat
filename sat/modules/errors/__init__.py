@@ -6,9 +6,9 @@ import sys
 from threading import Thread
 import traceback
 try:
-    import ansi
-except ModuleNotFoundError:
     import sat.modules.ansi as ansi
+except ModuleNotFoundError:
+    import modules.ansi as ansi
 
 
 def eprint(*args, **kwargs):

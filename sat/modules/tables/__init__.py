@@ -3,11 +3,11 @@ This module is responsible for handling the printing of the table
 to STDOUT/STDERR.
 """
 try:
-    import ansi
-    import log
-except ModuleNotFoundError:
     import sat.modules.ansi as ansi
     import sat.modules.log as log
+except ModuleNotFoundError:
+    import modules.ansi as ansi
+    import modules.log as log
 
 import sys
 

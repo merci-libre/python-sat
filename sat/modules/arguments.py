@@ -1,8 +1,8 @@
 import argparse
 try:
-    from . import toml
+    from sat.modules import toml
 except ModuleNotFoundError:
-    import toml
+    import modules.toml as toml
 
 
 # NOT YET IMPLEMENTED

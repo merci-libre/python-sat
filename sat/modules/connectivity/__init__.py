@@ -22,13 +22,13 @@ import socket
 import threading
 import time
 try:
-    import log
-    from errors import eprint
-    import errors
-except ModuleNotFoundError:
     import sat.modules.log as log
     from sat.modules.errors import eprint
     import sat.modules.errors as errors
+except ModuleNotFoundError:
+    import modules.log as log
+    from modules.errors import eprint
+    import modules.errors as errors
 # try importing our external dependencies
 try:
     has_dep1 = False

@@ -20,11 +20,12 @@ preformatted .toml file that you can manually edit.
 import os
 import pathlib
 try:
-    import errors
-    import ansi
-except ModuleNotFoundError:
     import sat.modules.ansi as ansi
     import sat.modules.errors as errors
+except ModuleNotFoundError:
+    import modules.errors
+    import modules.ansi
+
 try:
     import tomllib
 except ImportError:

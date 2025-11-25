@@ -25,14 +25,14 @@ def start():
     """
     # try to import these libraries
     try:
-        from serveradmintool.modules import main
-        from serveradmintool.modules import ansi
-    except ModuleNotFoundError:
-        from .modules import main
-        from .modules import ansi
+        from sat.modules import main
+        from sat.modules import ansi
     except ImportError:
         from modules import main
         from modules import ansi
+    except ModuleNotFoundError:
+        from .modules import main
+        from .modules import ansi
 
     try:
         main.run(name, __version__)

@@ -42,7 +42,7 @@ def parse(prog_name: str):
                         uses default in configuration directory.
                         ''',
                         default=toml.get_toml_path())
-    parser.add_argument("--timeout", "-T", default=4,
+    parser.add_argument("--timeout", "-T", default=0,
                         nargs="?",
                         type=int,
                         help="Set the timeout (in seconds)")

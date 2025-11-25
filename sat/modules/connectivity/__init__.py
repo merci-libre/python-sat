@@ -20,6 +20,7 @@ also creates and stores the hashmap dictionaries for the program:
 """
 import socket
 import threading
+import time
 try:
     import log
     from errors import eprint
@@ -106,26 +107,42 @@ def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
     return http_response
 
 
-def test_ports(ip_address: str, port: int, timeout: int) -> None:
+def __onConnect(sock: socket.socket, ip_address: str, port: int) -> bool:
+    log.write(f"[ports]: connected to {port} on {ip_address}!")
+    list_open: list = open_ports.get(ip_address)
+    list_closed: list = closed_ports.get(ip_address)
+    list_open.append(port)
+    list_closed.remove(port)
+    open_ports[ip_address] = list_open
+    closed_ports[ip_address] = list_closed
+    sock.close()
+
+
+def test_ports(ip_address: str,
+               port: int,
+               timeout: int,
+               SIGKILL: threading
+               .Event) -> None:
     """
     Test port connectivity, and appends them to a dictionary
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    list_open = open_ports.get(ip_address)
-    list_closed = closed_ports.get(ip_address)
     result = sock.connect_ex((ip_address, port))
+    log.notify(f"scanning {ip_address} on {port}")
+    http_result = test_http(ip_address, port, timeout)
+    # connect
+    if result == 0 or http_result:
+        __onConnect(sock, ip_address, port)
+        return
 
-    if result == 0 or test_http(ip_address, port, timeout):
-        log.write(f"[ports]: connected to {port} on {ip_address}!")
-        list_open.append(port)
+    while not SIGKILL.is_set():
+        if result == 0:
+            log.write(f"[ports]: connected to {port} on {ip_address}!")
+            __onConnect(sock, ip_address, port)
+            return
 
-    else:
-        log.error(f"[ports]: unable to connect to {port} on {ip_address}...")
-        list_closed.append(port)
-    sock.close()
-
-    open_ports[ip_address] = list_open
-    closed_ports[ip_address] = list_closed
+    log.error(f"[ports]: unable to connect to {
+        port} on {ip_address} (THREAD TIMED OUT)...")
 
 
 def ping(ip_address: str, main_timeout: int, max_packets_sent=5) -> bool:
@@ -211,30 +228,40 @@ def test(ip_address: str, ports, scan: bool, timeout=4) -> None:
         if ports is not None and scan:
             port_list = connections.get(ip_address)[1]
             list_open = []
-            list_closed = []
 
             open_ports[ip_address] = list_open
-            closed_ports[ip_address] = list_closed
+            closed_ports[ip_address] = port_list
             log.notify(f"checking port status on {
                        ip_address} on ports: {ports}")
+
             # create subthreads for port scanning
             threads = []
+            log.start("Starting subthread: port scanner")
+            sigkill = threading.Event()
             for port in port_list:
                 t = threading.Thread(
-                    target=test_ports(
-                        ip_address, port, timeout),
+                    target=test_ports,
+                    args=(ip_address, port, timeout, sigkill)
                 )
+                log.notify(f"loaded subthread {t} with values {
+                           ip_address}, {port}. {timeout}")
                 t.daemon = True
                 threads.append(t)
 
             # start the subthreads
             for thread in threads:
+                log.start(f"starting thread! {thread}")
                 thread.start()
-                thread.join(timeout)
-            log.notify(f"open_ports: {open_ports}")
-            log.notify(f"closed_ports: {closed_ports}")
 
-        return  # stop and rejoin the main thread.
+            # sets a timer
+            timer = 1
+            # sleep for timeout
+            time.sleep(timer)
+            sigkill.set()
+            for thread in threads:
+                thread.join()
+
+            return
 
     except Exception as e:
         log.error(e)

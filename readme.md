@@ -300,14 +300,31 @@ what `sat` interprets the information within `servers.toml`.
 
 | Key             | Value Types     | Description         | Example         |
 | --------------- | --------------- | ------------------- | --------------- |
-| `ip_address`    | String          | Server IP address   | "127.0.0.1"     |
+| `ip`            | String          | Server IP address   | "127.0.0.1"     |
 | `ports`         | List[int]       | TCP ports to check  | `[443, 22]`     |
 | `scan`          | Boolean         | Allow Port Scan?    | `True/False`    |
 
 **EXAMPLES**
-- `ip_address`: "192.168.0.1" or "https://google.com", or (hostname) in `/etc/hosts`.
+- `ip`: "192.168.0.1" or "https://google.com", or (hostname) in `/etc/hosts`.
 - `ports`: `[443, 22, 21]`
-- `scan`: True
+- `scan`: true
+
+```toml
+# in your own toml:
+
+[servers]
+
+[server.name]
+ip = "127.0.0.1"
+ports = [22, 21, 65535]
+scan = true
+
+[server.name2]
+ip= google.com
+# omission of ports/scan will not scan the ports, but perform an
+# ICMP ping test.
+```
+
 
 # Contributing
 To contribute to this project please fork the repository or add any suggestions through the

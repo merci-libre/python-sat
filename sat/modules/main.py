@@ -193,7 +193,7 @@ def run(name: str, version: str):
 
     # if the user sets the argument to 0, timeout never.
     if args.timeout == 0:
-        timeout = 1
+        timeout = 0.1
 
     # parse the toml file.
     try:

@@ -41,7 +41,7 @@ to explain more about the project.
 
 ## Why was this Written
 Prior to my tenure at Loyola, I have had a load of experience in my homelab setting up servers,
-securing them, and configuring them. One issue I had constantly occuring into was the failure of
+securing them, and configuring them. One issue I had constantly kept running into was the failure of
 certain services, of which I had to diagnose the issues through numerous command line
 inputs. I would have to ensure that the server was able to be reached with ICMP echoes,
 and use tools such as `nmap` to see what ports were communicating. Previously, this had resulted

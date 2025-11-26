@@ -10,12 +10,12 @@ Check the supported Operating Systems here:
 ## List of supported Operating Systems
 | OS              | Install script | PIP install | Tested?   | Supported? | Works?      |
 | --------------- | -------------- | ----------- | --------- | ---------- | ----------- |
-| Debian Linux    | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
-| Ubuntu          | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
-| Arch Linux      | (✅)           | VENV only   | (✅)      | (✅)       |  (✅)       |
-| Gentoo          | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
-| OpenSUSE        | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
-| RHEL-based      | (❌)           | VENV only   | (❌)      | (✅)       |  TBD        |
+| Debian Linux    | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
+| Ubuntu          | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
+| Arch Linux      | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
+| Gentoo          | (❌)           | (✅)        | (❌)      | (✅)       |  TBD        |
+| OpenSUSE        | (❌)           | (✅)        | (❌)      | (✅)       |  TBD        |
+| RHEL-based      | (❌)           | (✅)        | (❌)      | (✅)       |  TBD        |
 | MacOS           | (✅)           | (✅)        | (✅)      | (✅)       |  (✅)       |
 | Windows         | (❌)           | None        | (✅)      | (❌)       |  WSL only   |
 

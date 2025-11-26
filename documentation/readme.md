@@ -300,8 +300,8 @@ Of course, what good is a program if a user can't use it?
 The install script is another thing that I am really proud of. It checks the user's operating system
 and installs the program based on that. For Linux users, it automatically picks up on which package
 manager it should use, and installs the dependencies for system-packages automatically, and installs
-the program to the user's computer to the `/usr/local/bin` and `/usr/lib/python{VERSION}/site-packages/`
-directory. It also detects whether the user is using `doas` or `sudo` for their substitute user command.
+the program to the user's computer to the `/usr/bin` and `/usr/lib/python{VERSION}/site-packages/`
+directory using pip (versions 1.3+). It also detects whether the user is using `doas` or `sudo` for their substitute user command.
 
 For Linux users, it automatically loads the `install.sh` command with all of the arguments required for install.
 Uninstalling uses `subprocess`, as the uninstall process is less command intensive.

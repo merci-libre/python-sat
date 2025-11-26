@@ -9,7 +9,7 @@ import argparse
 # build information
 
 class BUILDINFO:
-    version = "2.0"
+    version = "2.0p1 (2.0.1)"
     name = "sat"
 
 # installation flags.
@@ -418,7 +418,7 @@ def install(major: int, minor: int, name: str, version: str):
     installs the program.
     """
 
-    print(f"installing {name}{version} for {sys.platform} machines")
+    print(f"installing {name} {version} for {sys.platform} machines")
 
     # no windows!!!
     if os.name == "nt":

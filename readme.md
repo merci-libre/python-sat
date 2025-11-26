@@ -320,7 +320,7 @@ ports = [22, 21, 65535]
 scan = true
 
 [server.name2]
-ip= google.com
+ip = "google.com"
 # omission of ports/scan will not scan the ports, but perform an
 # ICMP ping test.
 ```

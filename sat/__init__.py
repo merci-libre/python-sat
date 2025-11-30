@@ -78,3 +78,4 @@ if os.path.exists(f"{config_dir}{dirvider}servers.toml"):
 else:
     print(f"creating servers.toml in {config_dir}")
     create_servers_toml(config_dir)
+    print("Please re-run python-sat!")

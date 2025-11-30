@@ -21,7 +21,8 @@ class INSTALLFLAGS:
     Change these if you would like to change
     any of the installation settings.
     """
-    # XDG compliant directory
+    # Default is set to the default xdg-compliant
+    # directory.
     config_dir = 'default'
     # install to system.
     system_install: bool
@@ -57,6 +58,10 @@ def parse_args():
 
 
 def create_servers_toml(config_dir: str):
+    """
+    Creates the initial servers toml
+    on installation.
+    """
     with open(f"{config_dir}servers.toml", 'w') as toml:
         toml.write("[servers]\n")
         toml.write("\n[servers.localhost]")
@@ -75,6 +80,11 @@ def create_servers_toml(config_dir: str):
 
 
 class ReadOneChar:
+    """
+    Gets a single character for input.
+    Used for prompting the user throughout
+    the install script.
+    """
 
     def __init__(self):
         import tty
@@ -83,12 +93,16 @@ class ReadOneChar:
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
 
+        # get raw stdin from the user.
         try:
             tty.setraw(sys.stdin.fileno())
             choice = sys.stdin.read(1)
 
+        # reset the terminal
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+        # get the choice by the user, q will always exit.
         match choice:
             case '1':
                 self.choice = 1
@@ -103,7 +117,20 @@ class ReadOneChar:
 
 
 class MacOS:
+    """
+    Installation process for MacOS. Uses pip for all of the installation
+    process, as well as all of the tools required to build the project.
+    """
+
     def get_deps(self):
+        """
+        Gets the dependencies for MacOS,
+        each dependencies that are already
+        existing on the system get removed from
+        the missingdeps list-- as soon as a missing
+        dependency is found, it will install any remaining
+        that are missing.
+        """
         import sys
         try:
             # assume all are missing...
@@ -138,12 +165,18 @@ class MacOS:
             print("dependencies obtained!")
 
     def system_uninstall():
+        """
+        Uninstalls python-sat from the machine :(
+        """
         import sys
         import subprocess
         subprocess.check_call(
             [sys.executable, "-m", "pip", "uninstall", "serveradmintool"])
 
     def system_install(self):
+        """
+        Installs via pip.
+        """
         MacOS().get_deps()
         import sys
         import subprocess
@@ -152,6 +185,14 @@ class MacOS:
 
 
 class Linux():
+    """
+    All of the installation tools for Unix/Linux
+    based systems. Uses system packages, and gets
+    the main dependencies from whatever system package
+    manager it detects.
+
+    BSD based systems yet to be implemented or supported :(
+    """
     old_lib_path = ""
     old_bin_path = ""
     major = 0
@@ -163,6 +204,12 @@ class Linux():
         self.minor = minor
 
     def get_packages(self, command):
+        """
+        Get the packages for building and running from
+        the system package manager. Supports Debian and
+        Arch based systems currently, but as soon as I
+        test on other distributions, they will be added here.
+        """
         # determine package manager
         try:
             import icmplib
@@ -225,7 +272,9 @@ class Linux():
 
     def which_superuser(self):
         """
-        Determines whether doas or sudo is run. Depending on which is installed
+        Determines whether doas or sudo is run privileged commands.
+        Depending on which is installed. If both are installed, the
+        user will be prompted via stdin to pick one.
         """
         sudo = False
         doas = False
@@ -240,6 +289,7 @@ class Linux():
             doas = True
             command = "doas"
 
+        # if both sudo and doas are detected, prompt for one.
         if sudo and doas:
             while True:
                 print("\nyou have both `sudo` and `doas` on your machine!")
@@ -261,6 +311,21 @@ class Linux():
         return command
 
     def old_system_uninstall(self, command):
+        """
+        Old system uninstall is here for users who installed
+        via the install script prior to versions 1.3+, where
+        manual binaries and libraries were created.
+
+        On installation, it should create the package via pip
+        and install it through pip. This allows the user to
+        manage packages more efficiently, as well as use the
+        package as intended.
+
+        Prior to version <1.3, sat/sat.py was moved to the /usr/local/bin
+        directory, and it would not run the package as intended. In
+        order to avoid this from occuring, I switched Linux installations
+        to use pip, which is not only more efficient-- but more orthodox.
+        """
         lib_removed = False
         bins_removed = False
 
@@ -295,7 +360,9 @@ class Linux():
 
     def full_install(self, command):
         """
-        performs a full system install.
+        Performs a full system install.
+        Builds the project from source,
+        using build, setuptools, and pip.
         """
         print("building the packages...")
         try:
@@ -314,6 +381,9 @@ class Linux():
             raise Exception("Failed to install packages from install.")
 
     def system_uninstall(self, command):
+        """
+        Uninstalls python-sat with pip.
+        """
         subprocess.check_call(
             [command, sys.executable, "-m",
              "pip",
@@ -335,11 +405,12 @@ class Linux():
             self.minor}/site-packages/serveradmintool"
         self.old_bin_path = "/usr/local/bin"
 
+        # detects the old installation directories.
         old_install = (os.path.exists(self.old_lib_path) or os.path.exists(
             f"{self.old_bin_path}/sat"))
 
-        print("Starting system install for python-sat ")
         # do a system install for linux machines.
+        print("Starting system install for python-sat ")
         if os.name == "posix" and INSTALLFLAGS.system_install:
             self.command = Linux(self.major, self.minor).which_superuser()
             Linux(self.major, self.minor).get_packages(self.command)
@@ -347,6 +418,7 @@ class Linux():
             # remove old installation method, we use pip now.
             print(f"checking if {self.old_lib_path} exists...")
 
+            # uninstalls the old code written.
             if old_install:
                 print(f"{self.old_lib_path} exists!")
                 print("As of python-sat 1.3",
@@ -382,11 +454,11 @@ class Linux():
 
 def make_config():
     """
-    although it says linux/windows, it is system agnostic
+    Makes the configuration directory for the user.
     """
     POSIX = (os.name == "posix")
     DARWIN = (sys.platform == "darwin")
-    WINDOWS = (os.name == "nt")
+    WINDOWS = (os.name == "nt")  # not supported!
     homedir = f"{pathlib.Path.home()}"
     configuration = ""
 
@@ -405,6 +477,8 @@ def make_config():
             configuration = INSTALLFLAGS.config_dir
         """
         print("It looks like you did not read the readme.")
+        print("Windows installs are not supported.")
+        exit(1)
 
     if homedir == "" or configuration == "":
         raise Exception
@@ -429,6 +503,7 @@ def install(major: int, minor: int, name: str, version: str):
         print("\nFor the easiest to use, get Ubuntu Linux for WSL.")
         exit(1)
 
+    # installation for linux machines.
     if INSTALLFLAGS.system_install and sys.platform == "linux":
         Linux(major, minor).system_install()
 
@@ -438,15 +513,17 @@ def install(major: int, minor: int, name: str, version: str):
 
     config_dir = make_config()
 
+    # make the configuration directory.
     try:
-        os.makedirs(config_dir)
         print(f"created configuration directory @ {config_dir}")
+        os.makedirs(config_dir)
     except FileExistsError:
         pass
 
     # change the divider depending on windows or posix
     dirvider = "/"
 
+    # create the toml file.
     if not os.path.exists(f"{config_dir}{dirvider}servers.toml"):
         print(f"creating servers.toml in {config_dir}")
         create_servers_toml(config_dir)
@@ -455,15 +532,18 @@ def install(major: int, minor: int, name: str, version: str):
 if __name__ == "__main__":
     major = sys.version_info.major
     minor = sys.version_info.minor
+    # parse user arguments.
     args = parse_args()
     INSTALLFLAGS.system_install = not args.uninstall
     INSTALLFLAGS.force_reinstall = args.force_reinstall
 
+    # if the user doesn't have 3.11+, exit with an error message.
     if major < 3 and minor < 11:
         print(f"Error: You need python version >= 3.11 to use {
               BUILDINFO.name}.\n Currently on version {major}.{minor}", file=sys.stderr)
         exit(1)
 
+    # uninstallation script.
     if args.uninstall:
         print(f"Uninstalling {BUILDINFO.name}...")
         try:
@@ -479,7 +559,7 @@ if __name__ == "__main__":
             print(f"{e}", file=sys.stderr)
 
         exit(0)
-    # install
+    # installation script.
     try:
         install(major, minor, BUILDINFO.name, BUILDINFO.version)
     except Exception as e:

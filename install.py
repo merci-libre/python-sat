@@ -9,7 +9,7 @@ import argparse
 # build information
 
 class BUILDINFO:
-    version = "2.0p2 (2.0.2)"
+    version = "2.0p2 (2.0.2)-testing"
     name = "sat"
 
 # installation flags.

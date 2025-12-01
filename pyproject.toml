@@ -10,7 +10,7 @@ name = "serveradmintool"
 readme = "readme.md"
 requires-python = ">=3.11"
 dependencies = ["requests", "icmplib"]
-version = "2.0.1"
+version = "2.0.2"
 
 [project.scripts]
 sat = "sat:start"

@@ -23,8 +23,8 @@ try:
     import sat.modules.ansi as ansi
     import sat.modules.errors as errors
 except ModuleNotFoundError:
-    import modules.errors
-    import modules.ansi
+    import modules.errors as errors
+    import modules.ansi as ansi
 
 try:
     import tomllib
@@ -110,10 +110,16 @@ def parse_toml(tomlfile: str) -> dict:
     Reads toml file and deserializes the data.
     """
     try:
+        if tomlfile is None:
+            raise FileNotFoundError
         with open(tomlfile, 'rb') as f:
             toml_data: dict = tomllib.load(f)
             return toml_data
     except FileNotFoundError:
+        if tomlfile is None:
+            errors.eprint(f"[ {ansi.RED}ERROR{ansi.END} ]: ",
+                          "No argument was passed to -t | --toml-file.")
+            exit(1)
         raise errors.TomlFiles.TomlFileMissing(tomlfile)
     except PermissionError:
         raise errors.TomlFiles.TomlReadPermissions(tomlfile)

@@ -85,8 +85,9 @@ def write_toml(filename: str, server_count=5):
             toml.write('\n# ports = [22,8080,443] : accepts list types\n')
             toml.write('\n# scan = type=boolean values (true or false)\n')
 
-            toml.write('\n# for more details, please consult the',
-                       'readme for more information.\n')
+            toml.write('''\n
+            # for more details, please consult the readme for more information.
+            \n''')
             for i in range(server_count):
                 toml.write("\n[servers.{server_name}]")
                 toml.write(

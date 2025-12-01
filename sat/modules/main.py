@@ -168,13 +168,14 @@ def run(name: str, version: str):
     """
     # initialize our arguments and load arguments
     date = time.asctime()
-    log.start(f"{name} ver. {version} on {date}")
     args = arguments.parse(name)
 
     # exit if these arguments to reduce unnecessary memory usage
     if args.version:
         print(f"{name} ver. {version}")
         exit(0)
+    # moved this down here so that when -vV, it doesn't appear
+    log.start(f"{name} ver. {version} on {date}")
 
     if args.new:
         if os.path.exists(args.new[0]):

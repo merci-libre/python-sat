@@ -1,34 +1,13 @@
 #!/usr/bin/env python3
 import os
+import time
 import subprocess
 import sys
 import pathlib
 import argparse
 
 
-# build information
-
-class BUILDINFO:
-    version = "2.0p2 (2.0.2)"
-    name = "sat"
-
-# installation flags.
-
-
-class INSTALLFLAGS:
-
-    """
-    Change these if you would like to change
-    any of the installation settings.
-    """
-    # Default is set to the default xdg-compliant
-    # directory.
-    config_dir = 'default'
-    # install to system.
-    system_install: bool
-    force_reinstall: bool
-
-
+# =========== argument parser ============= #
 def parse_args():
     """
     parse user arguments from STDIN.
@@ -51,34 +30,35 @@ def parse_args():
                         default=False,
                         action="store_true",
                         help='''
-                        Updates the package to the latest git version, and
-                        forces a reinstall. REQUIRES `git` to be installed!
+                        Updates the package to the latest git version using
+                        `git pull`, and forces a reinstall.
+                        REQUIRES `git` to be installed!
                         ''')
     return parser.parse_args()
 
 
-def create_servers_toml(config_dir: str):
+# build information
+class BUILDINFO:
+    version = "2.0p2 (2.0.2)"
+    name = "sat"
+
+
+# installation flags.
+class INSTALLFLAGS:
+
     """
-    Creates the initial servers toml
-    on installation.
+    Change these if you would like to change
+    any of the installation settings.
     """
-    with open(f"{config_dir}servers.toml", 'w') as toml:
-        toml.write("[servers]\n")
-        toml.write("\n[servers.localhost]")
-        toml.write('\n\tip = "127.0.0.1"')
-        toml.write('\n\tports=[22,443,8080]')
-        toml.write('\n\tscan=true')
-        toml.write("\n[servers.localhost2]")
-        toml.write('\n\tip="localhost"')
-        toml.write('\n\tports=22')
-        toml.write('\n\tscan=false')
-        toml.write("\n[servers.google_dns]")
-        toml.write('\n\tip="8.8.8.8"')
-        toml.write('\n\tscan=false')
-
-    print(f"{config_dir}servers.toml was created.")
+    # Default is set to the default xdg-compliant
+    # directory.
+    config_dir = 'default'
+    # install to system.
+    system_install: bool
+    force_reinstall: bool
 
 
+# Read 1 char from STDIN
 class ReadOneChar:
     """
     Gets a single character for input.
@@ -116,6 +96,7 @@ class ReadOneChar:
                 raise ValueError
 
 
+# ============ macOS Installation =========
 class MacOS:
     """
     Installation process for MacOS. Uses pip for all of the installation
@@ -184,6 +165,7 @@ class MacOS:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "."])
 
 
+# ============================= Linux Installation =========
 class Linux():
     """
     All of the installation tools for Unix/Linux
@@ -452,6 +434,29 @@ class Linux():
             Linux().full_install(self.command)
 
 
+# ========== servers.toml and configuration ============== #
+def create_servers_toml(config_dir: str):
+    """
+    Creates the initial servers toml
+    on installation.
+    """
+    with open(f"{config_dir}servers.toml", 'w') as toml:
+        toml.write("[servers]\n")
+        toml.write("\n[servers.localhost]")
+        toml.write('\n\tip = "127.0.0.1"')
+        toml.write('\n\tports=[22,443,8080]')
+        toml.write('\n\tscan=true')
+        toml.write("\n[servers.localhost2]")
+        toml.write('\n\tip="localhost"')
+        toml.write('\n\tports=22')
+        toml.write('\n\tscan=false')
+        toml.write("\n[servers.google_dns]")
+        toml.write('\n\tip="8.8.8.8"')
+        toml.write('\n\tscan=false')
+
+    print(f"{config_dir}servers.toml was created.")
+
+
 def make_config():
     """
     Makes the configuration directory for the user.
@@ -529,7 +534,7 @@ def install(major: int, minor: int, name: str, version: str):
         create_servers_toml(config_dir)
 
 
-if __name__ == "__main__":
+def main():
     major = sys.version_info.major
     minor = sys.version_info.minor
     # parse user arguments.
@@ -562,6 +567,9 @@ if __name__ == "__main__":
     if args.update:
         try:
             subprocess.check_call(("git", "pull"))
+            print(f"{BUILDINFO.name} up to date!")
+            time.sleep(1)
+            # when installing, the build info is incorrect.
             INSTALLFLAGS.force_reinstall = True
         except Exception as e:
             print(f"failed to update {BUILDINFO.name} {
@@ -575,3 +583,15 @@ if __name__ == "__main__":
         print(f"failed to install {BUILDINFO.name} {
               BUILDINFO.version}", file=sys.stderr)
         print(f"Error: {e}", file=sys.stderr)
+        exit(1)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nCancelled installation script...")
+        exit(0)
+    except EOFError:
+        print("\nCancelled installation script...")
+        exit(0)

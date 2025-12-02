@@ -51,8 +51,8 @@ def parse_args():
                         default=False,
                         action="store_true",
                         help='''
-                        Updates the package to the latest git version.
-                        REQUIRES `git` to be installed!
+                        Updates the package to the latest git version, and
+                        forces a reinstall. REQUIRES `git` to be installed!
                         ''')
     return parser.parse_args()
 
@@ -559,6 +559,15 @@ if __name__ == "__main__":
             print(f"{e}", file=sys.stderr)
 
         exit(0)
+    if args.update:
+        try:
+            subprocess.check_call(("git", "pull"))
+            INSTALLFLAGS.force_reinstall = True
+        except Exception as e:
+            print(f"failed to update {BUILDINFO.name} {
+                BUILDINFO.version}", file=sys.stderr)
+            print(f"Error: {e}", file=sys.stderr)
+
     # installation script.
     try:
         install(major, minor, BUILDINFO.name, BUILDINFO.version)

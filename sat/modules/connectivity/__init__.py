@@ -56,6 +56,8 @@ except ImportError:
         print("requests")
     exit(1)
 
+# after imports we can safely delete these.
+del has_dep1, has_dep2
 
 # these are globally accessible throughout the entire program
 connections = {}
@@ -83,6 +85,7 @@ def test_http(ip_address: str, port: int, main_timeout: int) -> bool:
         log.write(f"[http]: ABLE TO CONNECT VIA HTTP to {ip_address}:{port}!")
         log.info(f"Connected to {port} via HTTP on {
                  ip_address}, status={status}")
+        del status
         http_response = True
 
     except requests.exceptions.Timeout:

@@ -69,6 +69,13 @@ def __draw_ip_table_format(ip_address: str,
     ports = UpdateTables.open_ports.get(ip_address)
     closed_ports = UpdateTables.closed_ports.get(ip_address)
     responsive = UpdateTables.connections.get(ip_address)[0]
+    # if the closed ports or open ports
+    # are an empty list, format the list
+    # to look pretty.
+    if closed_ports == []:
+        closed_ports = None
+    if ports == []:
+        closed_ports = None
 
     # fix ip address length
     if ip_address.__len__() > __globals.Text.max_ip_length:

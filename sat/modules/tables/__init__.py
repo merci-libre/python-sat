@@ -75,7 +75,7 @@ def __draw_ip_table_format(ip_address: str,
     if closed_ports == []:
         closed_ports = None
     if ports == []:
-        closed_ports = None
+        ports = None
 
     # fix ip address length
     if ip_address.__len__() > __globals.Text.max_ip_length:

@@ -23,9 +23,6 @@ class UpdateTables():
     def __init__(self, open_ports: {},
                  closed_ports: {},
                  connections: {}):
-        log.info(f"[From UpdateMaps]: Connections Made: {connections}")
-        log.info(f"[From UpdateMaps]: Open Port Tables: {open_ports}")
-        log.info(f"[From UpdateMaps]: Closed Port Tables: {closed_ports}")
         UpdateTables.open_ports = open_ports
         UpdateTables.closed_ports = closed_ports
         UpdateTables.connections = connections

@@ -348,6 +348,7 @@ class Linux():
         """
         print("building the packages...")
         try:
+            user = os.getlogin()
             subprocess.check_call([sys.executable, "-m", "build"])
             subprocess.check_call(
                 [command,
@@ -359,6 +360,13 @@ class Linux():
                  "ignore",
                  "--break-system-packages",
                  "."])
+            subprocess.check_call(
+                [command,
+                 "chown",
+                 "-R",
+                 f"{user}:{user}",
+                 "build"]
+            )
         except subprocess.SubprocessError:
             raise Exception("Failed to install packages from install.")
 

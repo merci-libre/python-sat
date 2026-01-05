@@ -6,4 +6,8 @@ as ideally we want to make our code as modular as possible.
 
 In versions 1.2.5+, each library will contain a readme.md file to explain
 each libraries function to the program, and will include information on
-how dependencies interact with one another in the project.
+how dependencies interact with one another in the project. 
+|                         |                                               |
+|-------------------------|-----------------------------------------------|
+| Completed basic docs ✅ | Add function documentation for each library ❌| 
+

@@ -39,7 +39,7 @@ def parse_args():
 
 # build information
 class BUILDINFO:
-    version = "2.0p2 (2.0.2)"
+    version = "2.0p3 (2.0.3)"
     name = "sat"
 
 

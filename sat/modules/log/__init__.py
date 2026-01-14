@@ -6,6 +6,8 @@ argument
 
 import datetime
 import time
+import sys  # we could also use eprint from sat.modules.errors,
+
 # system import
 try:
     import sat.modules.ansi as ansi
@@ -40,7 +42,8 @@ def verbose_message(message: str):
     prints the log in real time.
     """
     time.sleep(0.1)
-    print(message)
+    # print to stderr
+    print(message, file=sys.stderr)
 
 
 def error(*args):
